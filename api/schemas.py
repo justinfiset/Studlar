@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 
+class TaskGet(BaseModel):
+    list_id: int
+
 class TaskCreate(BaseModel):
     title: str
     description: str
@@ -12,6 +15,10 @@ class TaskResponse(BaseModel):
     description: str
     status: str
     list_id: int
+
+# Tasklist
+class TaskListGet(BaseModel):
+    board_id: int
 
 class TaskListCreate(BaseModel):
     name: str
@@ -26,6 +33,10 @@ class TaskListResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+# Boards
+class BoardGet(BaseModel):
+    owner_id: int
 
 class BoardCreate(BaseModel):
     name: str

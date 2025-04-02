@@ -18,7 +18,15 @@ def get_db():
         db.close()
 
 # TASKS ROUTES
-@router.post("/api/task/", response_model=TaskResponse)
+@router.get("/api/tasks/", response_model=list[TaskResponse])
+def get_tasks(task: TaskGet = Depends(), db : Session = Depends(get_db)):
+    db_tasks = db.query(TaskList).filter(task.list_id == Task.list_id).all()
+    if(not db_tasks):
+        raise HTTPException(status_code=404, detail="No task found")
+    
+    return db_tasks
+
+@router.post("/api/tasks/", response_model=TaskResponse)
 def create_task(task: TaskCreate, db: Session = Depends(get_db)):
     db_tasklist = db.query(TaskList).filter(TaskList.id == task.list_id).first()
     if not db_tasklist:
@@ -31,7 +39,15 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):
     return db_task
 
 # TASKLIKST ROUTES
-@router.post("/api/tasklist/", response_model=TaskListResponse)
+@router.get("/api/tasklists/", response_model=list[TaskListResponse])
+def get_tasklists(tasklist: TaskListGet = Depends(), db : Session = Depends(get_db)):
+    db_tasklists = db.query(TaskList).filter(tasklist.board_id == TaskList.board_id).all()
+    if(not db_tasklists):
+        raise HTTPException(status_code=404, detail="No tasklist found")
+    
+    return db_tasklists
+
+@router.post("/api/tasklists/", response_model=TaskListResponse)
 def create_tasklist(tasklist: TaskListCreate, db: Session = Depends(get_db)):
     db_board = db.query(Board).filter(Board.id == tasklist.board_id).first()
     if not db_board:
@@ -45,7 +61,15 @@ def create_tasklist(tasklist: TaskListCreate, db: Session = Depends(get_db)):
 
 
 # BOARDS ROUTES
-@router.post("/api/board/", response_model=BoardResponse)
+@router.get("/api/boards/", response_model=list[BoardResponse])
+def get_boards(board: BoardGet = Depends(), db: Session = Depends(get_db)):
+    db_boards = db.query(Board).filter(board.owner_id == Board.owner_id).all()
+    if(not db_boards):
+        raise HTTPException(status_code=404, detail="No board found")
+    
+    return db_boards
+
+@router.post("/api/boards/", response_model=BoardResponse)
 def create_board(board: BoardCreate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.id == board.owner_id).first()
     if not db_user:
