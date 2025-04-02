@@ -1,29 +1,24 @@
-import Image from "next/image";
+"use client";
+
+import styles from "../app/home.module.css";
 
 import "./index.css";
 import { useEffect, useState } from "react";
 
 export default function Home() {
     const [error, setError] = useState("");
-    const [board, setBoard ] = useState(null);
+    const [board, setBoard] = useState(null);
 
-    const handleLoading = async (event) => {
+    const handleLoading = async () => {
         try {
-            const respone = await fetch("http://localhost:8000/api/boards/?owner_id=1", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: username.value,
-                    password: password.value,
-                }),
-            });
-
+            const respone = await fetch(
+                "http://localhost:8000/api/users/1/boards/"
+            );
             const data = await respone.json();
 
-            if(respone.ok) {
+            if (respone.ok) {
                 setBoard(data);
+                console.log(data);
             } else {
                 setError("Error: " + data.error);
             }
@@ -31,11 +26,64 @@ export default function Home() {
             console.error("Error:", error);
             setError("Error: " + error.message);
         }
-    }
+    };
+
+    useEffect(() => {
+        handleLoading();
+    }, []);
+
+    useEffect(() => {
+        if (board) {
+            window.requestAnimationFrame(() => {});
+        }
+    }, [board]);
+
+    const displayTasklist = (board) => {
+        return board.task_lists.map((tasklist) => {
+            return (
+                <div className="todolist-task" key={tasklist.id} draggable="true">
+                    <span className="material-icons">radio_button_unchecked</span>
+                    <p>{tasklist.name}</p>
+                    <span className={`material-icons ${styles.dragIcon}`}>drag_indicator</span>
+                </div>
+            );
+        });
+    };
+
+    const displayBoards = () => {
+        return board.map((board) => {
+            return (
+                <article key={board.id}>
+                    <div className="card-header">
+                        <p>{board.name}</p>
+                        <span className="material-icons card-header-menu">
+                            menu
+                        </span>
+                    </div>
+                    <p>{board.description}</p>
+                    {displayTasklist(board)}
+                    <div className="todolist-task">
+                        <p>
+                            <strong>+ Ajouter un item</strong>
+                        </p>
+                    </div>
+                </article>
+            );
+        });
+    };
 
     return (
         <section className="content">
             <div className="content-row">
+                {error && (
+                    <article>
+                        <h1>
+                            Error trying to load the dashboard. Please try again
+                            later.
+                        </h1>
+                        <p className={styles.errorHeader}>{error}</p>
+                    </article>
+                )}
                 <article>
                     <div className="card-header">
                         <p>Welcome to Studlar</p>
@@ -49,47 +97,8 @@ export default function Home() {
                     </p>
                     <p>Join today and get productive!</p>
                 </article>
-                <article id="todolist">
-                    <div className="card-header">
-                        <p>To Do List</p>
-                        <span className="material-icons card-header-menu">
-                            menu
-                        </span>
-                    </div>
-                    <div className="todolist-task" draggable="true">
-                        <span className="material-icons">
-                            radio_button_unchecked
-                        </span>
-                        <p>Faire le layout du site</p>
-                        <span className="material-icons">drag_indicator</span>
-                    </div>
-                    <div className="todolist-task" draggable="true">
-                        <span className="material-icons">
-                            radio_button_unchecked
-                        </span>
-                        <p>Faire le layout du site</p>
-                        <span className="material-icons">drag_indicator</span>
-                    </div>
-                    <div className="todolist-task" draggable="true">
-                        <span className="material-icons">
-                            radio_button_unchecked
-                        </span>
-                        <p>Faire le layout du site</p>
-                        <span className="material-icons">drag_indicator</span>
-                    </div>
-                    <div className="todolist-task" draggable="true">
-                        <span className="material-icons">
-                            radio_button_unchecked
-                        </span>
-                        <p>Faire le layout du site</p>
-                        <span className="material-icons">drag_indicator</span>
-                    </div>
-                    <div className="todolist-task">
-                        <p>
-                            <strong>+ Ajouter un item</strong>
-                        </p>
-                    </div>
-                </article>
+
+                {board && displayBoards()}
             </div>
 
             <div className="content-row">
@@ -101,9 +110,6 @@ export default function Home() {
                         </span>
                     </div>
                     <div id="calendar-days"></div>
-                </article>
-                <article>
-
                 </article>
             </div>
         </section>

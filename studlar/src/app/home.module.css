@@ -1,0 +1,12 @@
+.errorHeader {
+    color: #fb2828;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.dragIcon {
+    margin-left: auto;
+    cursor: pointer;
+    border-radius: 100%;
+    padding: 5px;
+}

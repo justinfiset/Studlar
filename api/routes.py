@@ -17,6 +17,45 @@ def get_db():
     finally:
         db.close()
 
+# GET ALL BOARDS AND CONTENT
+@router.get("/api/users/{user_id}/boards/")
+def get_user_boards(user_id: int, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    db_boards = db.query(Board).filter(Board.owner_id == user_id).all()
+    result = []
+    for board in db_boards:
+        result.append({
+            "id": board.id,
+            "name": board.name,
+            "description": board.description,
+            "positionX": board.positionX,
+            "positionY": board.positionY,
+            "sizeX": board.sizeX,
+            "sizeY": board.sizeY,
+            "task_lists": [
+                {
+                    "id": task_list.id,
+                    "name": task_list.name,
+                    "description": task_list.description,
+                    "tasks": [
+                        {
+                            "id": task.id,
+                            "title": task.title,
+                            "description": task.description,
+                            "status": task.status
+                        }
+                        for task in task_list.tasks
+                    ]
+                }
+                for task_list in board.task_lists
+            ]
+        })
+
+    return result;
+
 # TASKS ROUTES
 @router.get("/api/tasks/", response_model=list[TaskResponse])
 def get_tasks(task: TaskGet = Depends(), db : Session = Depends(get_db)):

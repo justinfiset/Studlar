@@ -16,7 +16,6 @@
 }
 
 .todolist-task * {
-    display: inline-block;
     margin: 0;
     margin-right: 10px;
 }
@@ -34,8 +33,6 @@
 }
 
 .todolist-task > *:last-child:hover {
-    margin-left: auto;
-    cursor: pointer;
     background: #588157;
 }
 
