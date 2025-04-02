@@ -19,6 +19,7 @@ class Board(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
+    description = Column(Text)
     positionX = Column(Integer)
     positionY = Column(Integer)
     sizeX = Column(Integer)

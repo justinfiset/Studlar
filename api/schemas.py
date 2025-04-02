@@ -1,5 +1,54 @@
 from pydantic import BaseModel
 
+class TaskCreate(BaseModel):
+    title: str
+    description: str
+    status: str
+    list_id: int
+
+class TaskResponse(BaseModel):
+    id: int
+    title: str
+    description: str
+    status: str
+    list_id: int
+
+class TaskListCreate(BaseModel):
+    name: str
+    description: str
+    board_id: int
+
+class TaskListResponse(BaseModel):
+    id: int
+    name: str
+    description: str
+    board_id: int
+
+    class Config:
+        orm_mode = True
+
+class BoardCreate(BaseModel):
+    name: str
+    description: str
+    owner_id: int
+    positionX: int = 0
+    positionY: int = 0
+    sizeX: int = 1
+    sizeY: int = 1
+
+class BoardResponse(BaseModel):
+    id: int
+    name: str
+    description: str
+    positionX: int
+    positionY: int
+    sizeX: int
+    sizeY: int
+    owner_id: int
+
+    class Config:
+        orm_mode = True
+
 class UserLogin(BaseModel):
     email: str
     password: str
