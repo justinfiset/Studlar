@@ -1,0 +1,124 @@
+body {
+    background-color: #588157;
+    color: #344E41;
+}
+
+* {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: 100ms;
+}
+
+*::selection {
+    background-color: #3A5A40;
+    color: #DAD7CD;
+}
+
+a {
+    all: unset;
+    text-decoration: none;
+}
+
+nav {
+    background-color: #3A5A40;
+    color: #DAD7CD;
+    display: flex;
+
+    align-items: center;
+    padding: 0.5em 1em 0.5em 1em;
+    font-size: 2em;
+    font-weight: bolder;
+    border-bottom: solid 4px #304934;
+}
+
+nav *:last-child {
+    margin-left: auto;
+}
+
+nav * {
+    margin: 0;
+}
+
+nav *:hover {
+    cursor: pointer;
+    color: #A3B18A;
+}
+
+article {
+    padding: 1em;
+    margin: 1em;
+    border-radius: 0.5em;
+    background-color: #DAD7CD;
+    border-color: #3A5A40;
+    border: solid 2px;
+}
+
+article p label input button {
+    font-size: 1.5em;
+    font-weight: 500;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: solid 1px #3A5A40;;
+    font-size: 1em;
+}
+
+.card-header * {
+    margin: 0 0 5px 0;
+    font-weight: bolder;
+    font-size: 2em;
+}
+
+.card-header-menu {
+    padding: 0.3em;
+    margin-left: 0.3em;
+    cursor: pointer;
+    border-radius: 100%;
+}
+
+.card-header-menu:hover {
+    background-color: #A3B18A;
+}
+
+button {
+    all: unset;
+    padding: 0.5em 2em;
+    margin-top: 0.8em;
+    background-color: #3A5A40;
+    color: #DAD7CD;
+    border: solid 2px #588157;
+}
+
+button:hover {
+    background-color: #588157;
+    border: solid 2px #3A5A40;
+}
+
+button {
+    all: unset;
+    padding: 0.5em 2em;
+    margin-top: 0.8em;
+    background-color: #3A5A40;
+    color: #DAD7CD;
+    border: solid 2px #588157;
+    border-radius: 5px;
+}   
+
+button:hover {
+    background-color: #588157;
+    border: solid 2px #3A5A40;
+}
+
+
+.danger-button {
+    background-color: #C85250;
+    color: #DAD7CD;
+    border: solid 2px #E7625F;
+}
+
+.danger-button:hover {
+    background-color: #E7625F;
+    border: solid 2px #C85250;
+}

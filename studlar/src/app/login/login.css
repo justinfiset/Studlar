@@ -1,0 +1,43 @@
+.content {
+    display: flex;
+    width: 100wh;
+    justify-content: center;
+}
+
+article {
+    width: 400px;
+}
+
+form {
+    width: 100%;
+    margin-top: 0.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+}
+
+label {
+    margin-bottom: 0.2em;
+    font-weight: 600;
+}
+
+input {
+    all: unset;
+    background-color: #f1f0ec;
+    padding: 0.3em 0.4em;
+    border-radius: 5px;
+    margin-bottom: 0.2em;
+    border: solid 1px #588157;
+}
+
+.error {
+    padding: 0.2em;
+    font-size: 1.5em;
+    text-align: center;
+    margin: 0;
+    max-width: 100%;
+    text-wrap: normal;
+    color: rgb(255, 71, 71);
+}
