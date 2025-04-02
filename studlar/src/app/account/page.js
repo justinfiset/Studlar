@@ -16,9 +16,9 @@ export default function AccountPage(props) {
                     {
                         user ? (
                             <div className="account-info">
-                                <p>Firstname: {user.firstname}</p>
-                                <p>Lastname: {user.lastname}</p>
-                                <p>Email: {user.email}</p>
+                                <p><strong>Firstname:</strong> {user.firstname}</p>
+                                <p><strong>Lastname:</strong> {user.lastname}</p>
+                                <p><strong>Email:</strong> {user.email}</p>
                             </div>
                         ) : (
                             <p>Please log in to view your account settings.</p>

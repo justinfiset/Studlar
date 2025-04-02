@@ -1,8 +1,38 @@
 import Image from "next/image";
 
 import "./index.css";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+    const [error, setError] = useState("");
+    const [board, setBoard ] = useState(null);
+
+    const handleLoading = async (event) => {
+        try {
+            const respone = await fetch("http://localhost:8000/api/boards/?owner_id=1", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: username.value,
+                    password: password.value,
+                }),
+            });
+
+            const data = await respone.json();
+
+            if(respone.ok) {
+                setBoard(data);
+            } else {
+                setError("Error: " + data.error);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setError("Error: " + error.message);
+        }
+    }
+
     return (
         <section className="content">
             <div className="content-row">
@@ -71,6 +101,9 @@ export default function Home() {
                         </span>
                     </div>
                     <div id="calendar-days"></div>
+                </article>
+                <article>
+
                 </article>
             </div>
         </section>
