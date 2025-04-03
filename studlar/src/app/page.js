@@ -1,13 +1,16 @@
 "use client";
 
-import styles from "../app/home.module.css";
+import styles from "@//app/home.module.css";
+import cardStyles from "@/app/card.module.css";
 
 import "./index.css";
 import { useEffect, useState } from "react";
+import CreateBoardModel from "@/components/Modal/CreateBoardModal";
 
 export default function Home() {
     const [error, setError] = useState("");
     const [board, setBoard] = useState(null);
+    const [createModal, setCreateModal] = useState(false);
 
     const handleLoading = async () => {
         try {
@@ -41,10 +44,29 @@ export default function Home() {
     const displayTasklist = (board) => {
         return board.task_lists.map((tasklist) => {
             return (
-                <div className="todolist-task" key={tasklist.id} draggable="true">
-                    <span className="material-icons">radio_button_unchecked</span>
-                    <p>{tasklist.name}</p>
-                    <span className={`material-icons ${styles.dragIcon}`}>drag_indicator</span>
+                <div key={tasklist.id}>
+                    {
+                        // Display the tasklist name only if it is not empty
+                        tasklist.name && (
+                            <div className={styles.subsectionHeader}>
+                                <p>{tasklist.name}</p>
+                            </div>
+                        )
+                    }
+                    <div
+                        className="todolist-task"
+                        key={tasklist.id}
+                        draggable="true"
+                    >
+                        <span className="material-icons">
+                            radio_button_unchecked
+                        </span>
+                        <p>{tasklist.name}</p>
+                        <span className={`material-icons ${styles.dragIcon}`}>
+                            drag_indicator
+                        </span>
+                    </div>
+                    <span></span>
                 </div>
             );
         });
@@ -54,6 +76,7 @@ export default function Home() {
         return board.map((board) => {
             return (
                 <article key={board.id}>
+                    <div className={cardStyles.draggableHeader}></div>
                     <div className="card-header">
                         <p>{board.name}</p>
                         <span className="material-icons card-header-menu">
@@ -66,6 +89,7 @@ export default function Home() {
                         <p>
                             <strong>+ Ajouter un item</strong>
                         </p>
+                        <span></span>
                     </div>
                 </article>
             );
@@ -73,8 +97,8 @@ export default function Home() {
     };
 
     return (
-        <section className="content">
-            <div className="content-row">
+        <>
+            <section className={`content ${cardStyles.contentHolder}`}>
                 {error && (
                     <article>
                         <h1>
@@ -85,6 +109,7 @@ export default function Home() {
                     </article>
                 )}
                 <article>
+                    <div className={cardStyles.draggableHeader}></div>
                     <div className="card-header">
                         <p>Welcome to Studlar</p>
                         <span className="material-icons card-header-menu">
@@ -99,10 +124,8 @@ export default function Home() {
                 </article>
 
                 {board && displayBoards()}
-            </div>
-
-            <div className="content-row">
                 <article id="calendar">
+                    <div className={cardStyles.draggableHeader}></div>
                     <div className="card-header">
                         <p>Calendar</p>
                         <span className="material-icons card-header-menu">
@@ -111,7 +134,11 @@ export default function Home() {
                     </div>
                     <div id="calendar-days"></div>
                 </article>
+            </section>
+            <div className={styles.addBtn} onClick={() => setCreateModal(true)}>
+                <span className="material-icons">add</span>
             </div>
-        </section>
+            { createModal && <CreateBoardModel onClose={() => setCreateModal(false)}/> }
+        </>
     );
 }

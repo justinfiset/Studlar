@@ -1,9 +1,7 @@
 .content {
     display: flex;
-}
-
-.content-row {
-    max-width: 50%;
+    width: 100vw;
+    flex-wrap: wrap;
 }
 
 .todolist-task  {
@@ -39,4 +37,3 @@
 .todolist-task:last-child * {
     margin-left: 0;
 }
-    
