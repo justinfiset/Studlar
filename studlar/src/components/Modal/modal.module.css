@@ -24,13 +24,25 @@
     font-size: 2em;
 }
 
-.cardHeaderCclose {
+.cardHeaderClose {
     padding: 0.3em;
-    margin-left: 0.3em;
+    margin: 0.3em 0em 0.3em 0.3em;
     cursor: pointer;
     border-radius: 100%;
 }
 
-.cardHeaderCclose:hover {
+.cardHeaderClose:hover {
     background-color: #A3B18A;
+}
+
+.formContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1em;
+}
+
+.formContent * {
+    width: 100%;
 }

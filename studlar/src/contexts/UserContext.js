@@ -17,6 +17,10 @@ export function UserProvider({ children }) {
         }
     }, []);
 
+    const getUserId = () => {
+        return user ? user.id : null;
+    };
+
     const login = (userData) => {
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));

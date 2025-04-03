@@ -88,9 +88,10 @@ article p label input button {
 
 button {
     all: unset;
-    padding: 0.5em 2em;
+    padding: 0.5em 1.2em;
     margin-top: 0.8em;
     background-color: #3A5A40;
+    text-align: center;
     color: #DAD7CD;
     border: solid 2px #588157;
     border-radius: 5px;
@@ -110,4 +111,18 @@ button:hover {
 .danger-button:hover {
     background-color: #E7625F;
     border: solid 2px #C85250;
+}
+
+label {
+    margin-bottom: 0.2em;
+    font-weight: 600;
+}
+
+input, textarea{
+    all: unset;
+    background-color: #f1f0ec;
+    padding: 0.3em 0.4em;
+    border-radius: 5px;
+    margin-bottom: 0.2em;
+    border: solid 1px #588157;
 }
