@@ -21,6 +21,7 @@ function Header() {
         </header>
     );
 }
+
 export default function RootLayout({ children }) {
     return (
         <UserProvider>

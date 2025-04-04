@@ -34,7 +34,7 @@
 .optionsContainer {
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
     margin-top: 0.5em;
     width: 100%;
     font-size: larger;
@@ -47,6 +47,7 @@
     border-radius: 5px;
     background-color: #588157;
     color: #DAD7CD;
+    margin: 0.5em;
 }
 
 .deleteBtn {

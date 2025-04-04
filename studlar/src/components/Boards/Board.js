@@ -1,8 +1,37 @@
 import { useState } from "react";
 import styles from "./board.module.css";
+import { useUser } from "@/contexts/UserContext";
 
-export default function Board({ board }) {
+export default function Board({ board, onDelete }) {
     const [showOptions, setShowOptions] = useState(false);
+    const { user } = useUser();
+
+    const delCurrentBoard = async () => {
+        try {
+            const respone = await fetch(`/api/boards/?id=${board.id}&owner_id=${user.id}`, {
+                method: "DELETE"
+            });
+            const data = await respone.json();
+
+            if (respone.ok) {
+                onDelete();
+            } else {
+                //setError("Error: " + data.error);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            //setError("Error: " + error.message);
+        }
+    };
+
+    const handleEdit = () => {
+        setShowOptions(false);
+    }
+
+    const handleDelete = () => {
+        setShowOptions(false);
+        delCurrentBoard();
+    }
 
     const displayTasklist = (board) => {
         return board.task_lists.map((tasklist) => {
@@ -61,8 +90,8 @@ export default function Board({ board }) {
                 </>
             ) : (
                 <div className={styles.optionsContainer}>
-                    <p className="material-icons">edit</p>
-                    <p className={`material-icons ${styles.deleteBtn}`}>delete</p>
+                    <p onClick={handleEdit} className="material-icons">edit</p>
+                    <p onClick={handleDelete} className={`material-icons ${styles.deleteBtn}`}>delete</p>
                     {/* <p className="material-icons">share</p> */}
                 </div>
             )}

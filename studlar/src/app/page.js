@@ -52,7 +52,7 @@ export default function Home() {
 
     const displayBoards = () => {
         return board.map((board) => {
-            return <Board key={board.id} board={board}></Board>;
+            return <Board key={board.id} board={board} onDelete={requestRefresh}></Board>;
         });
     };
 
