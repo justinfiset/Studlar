@@ -1,13 +1,14 @@
 body {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #588157;
     color: #344E41;
     max-width: 100vw;
     overflow: hiddenz;
 }
 
-* {
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+*, *::before, *::after {
     transition: 100ms;
+    box-sizing: border-box;
 }
 
 *::selection {
@@ -62,8 +63,8 @@ article p label input button {
 }
 
 .card-header {
+    margin-top: 20px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
     border-bottom: solid 1px #3A5A40;;
     font-size: 1em;
@@ -80,6 +81,7 @@ article p label input button {
     margin-left: 0.3em;
     cursor: pointer;
     border-radius: 100%;
+    height: fit-content;
 }
 
 .card-header-menu:hover {
@@ -95,6 +97,7 @@ button {
     color: #DAD7CD;
     border: solid 2px #588157;
     border-radius: 5px;
+    box-sizing: border-box;
 } 
 
 button:hover {

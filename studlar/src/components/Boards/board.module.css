@@ -1,0 +1,32 @@
+.draggableHeader {
+    height: 0.8em;
+    cursor: move;
+    background-color: #A3B18A;
+    border: solid 2px #588157;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    margin-bottom: 0.5em;
+}
+
+.dragIcon {
+    margin-left: auto;
+    cursor: pointer;
+    border-radius: 100%;
+    padding: 5px;
+}
+
+.subsectionHeader {
+    padding: 0;
+    color: #588157;
+    font-weight: bolder;
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: solid 1px #588157;;
+}
+
+.subsectionHeader * {
+    margin-top: 0;
+    margin-bottom: 5px;
+}

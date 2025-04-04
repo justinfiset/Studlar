@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { useUser } from "@/contexts/UserContext";
 
-import "./login.css";
+import styles from "./login.module.css";
 
 export default function LoginPage() {
     const [error, setError] = useState("");
@@ -18,7 +18,7 @@ export default function LoginPage() {
         const username = document.getElementById("username");
         const password = document.getElementById("password");
 
-        if(username.value.length < 1 || password.value.length < 1) {
+        if (username.value.length < 1 || password.value.length < 1) {
             setError("Error: please fill all fields");
             return;
         }
@@ -37,7 +37,7 @@ export default function LoginPage() {
 
             const data = await respone.json();
 
-            if(respone.ok) {
+            if (respone.ok) {
                 login(data);
                 router.push("/");
             } else {
@@ -47,37 +47,35 @@ export default function LoginPage() {
             console.error("Error:", error);
             setError("Error: " + error.message);
         }
-    }
+    };
 
     return (
-        <section className="content">
-            <div className="content-row">
-                <article>
-                    <div className="card-header">
-                        <p>Login</p>
-                    </div>
-                    {error && <p className="error">{error}</p>}
-                    <form method="POST">
-                        <label>Username : </label>
-                        <input
-                            type="text"
-                            name="username"
-                            id="username"
-                            placeholder="AlbertEinstein1234@gmail.com"
-                            required
-                        />
-                        <label>Password : </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="E=mc^2"
-                            required
-                        />
-                        <button onClick={handleSubmit}>Login</button>
-                    </form>
-                </article>
-            </div>
+        <section className={styles.content}>
+            <article className={styles.card}>
+                <div className="card-header">
+                    <p>Login</p>
+                </div>
+                {error && <p className={styles.error}>{error}</p>}
+                <form className={styles.form}>
+                    <label>Username : </label>
+                    <input
+                        type="text"
+                        name="username"
+                        id="username"
+                        placeholder="AlbertEinstein1234@gmail.com"
+                        required
+                    />
+                    <label>Password : </label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="E=mc^2"
+                        required
+                    />
+                    <button onClick={handleSubmit}>Login</button>
+                </form>
+            </article>
         </section>
     );
 }

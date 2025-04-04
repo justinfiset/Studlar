@@ -1,12 +1,10 @@
 import { useUser } from "@/contexts/UserContext";
 import styles from "./modal.module.css";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function CreateBoardModel(props) {
-    const { getUserId } = useUser();
+    const { user } = useUser();
     const [error, setError] = useState("");
-    const router = useRouter();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -14,14 +12,13 @@ export default function CreateBoardModel(props) {
         const boardname = document.getElementById("boardname").value;
         const description = document.getElementById("description").value;
         
-        const userId = getUserId;
-        if (!userId) {
+        if (!user) {
             setError("Error: user not logged in");
             return;
         }
 
-        if (boardname.length < 1 || description.length < 1) {
-            setError("Error: please fill all fields");
+        if (boardname.length < 1) {
+            setError("Error: please fill all required fields");
             return;
         }
 
@@ -34,13 +31,14 @@ export default function CreateBoardModel(props) {
                 body: JSON.stringify({
                     name: boardname,
                     description: description,
-                    owner_id: userId,
+                    owner_id: user.id,
                 }),
             });
             const data = await response.json();
             if (response.ok) {
                 props.onClose();
-                router.refresh();
+                props.onCreate();
+                console.log("Board created successfully.");
             } else {
                 setError("Error: " + data.error);
                 console.error("Error:", data.error);
@@ -77,7 +75,6 @@ export default function CreateBoardModel(props) {
                             name="description"
                             id="description"
                             placeholder="Very useful board description..."
-                            required
                         />
                         <button onClick={handleSubmit}>Create new board</button>
                     </form>
