@@ -30,3 +30,26 @@
     margin-top: 0;
     margin-bottom: 5px;
 }
+
+.optionsContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-top: 0.5em;
+    width: 100%;
+    font-size: larger;
+}
+
+.optionsContainer > * {
+    cursor: pointer;
+    padding: 0.5em;
+    border: 1px solid #3A5A40;
+    border-radius: 5px;
+    background-color: #588157;
+    color: #DAD7CD;
+}
+
+.deleteBtn {
+    background-color: #e2514e;
+    color: #DAD7CD;
+}

@@ -1,6 +1,9 @@
-import styles from "./Board.module.css";
+import { useState } from "react";
+import styles from "./board.module.css";
 
 export default function Board({ board }) {
+    const [showOptions, setShowOptions] = useState(false);
+
     const displayTasklist = (board) => {
         return board.task_lists.map((tasklist) => {
             return (
@@ -31,22 +34,38 @@ export default function Board({ board }) {
             );
         });
     };
-    
+
+    const handleOptionsBtn = () => {
+        setShowOptions(!showOptions);
+    }
+
     return (
         <article>
             <div className={styles.draggableHeader}></div>
             <div className="card-header">
                 <p>{board.name}</p>
-                <span className="material-icons card-header-menu">menu</span>
+                <span className="material-icons card-header-menu" onClick={handleOptionsBtn}>
+                    {showOptions ? "close" : "menu"}
+                </span>
             </div>
-            <p>{board.description}</p>
-            {displayTasklist(board)}
-            <div className="todolist-task">
-                <p>
-                    <strong>+ Ajouter un item</strong>
-                </p>
-                <span></span>
-            </div>
+            {!showOptions ? (
+                <>
+                    <p>{board.description}</p>
+                    {displayTasklist(board)}
+                    <div className="todolist-task">
+                        <p>
+                            <strong>+ Ajouter un item</strong>
+                        </p>
+                        <span></span>
+                    </div>
+                </>
+            ) : (
+                <div className={styles.optionsContainer}>
+                    <p className="material-icons">edit</p>
+                    <p className={`material-icons ${styles.deleteBtn}`}>delete</p>
+                    {/* <p className="material-icons">share</p> */}
+                </div>
+            )}
         </article>
     );
 }
