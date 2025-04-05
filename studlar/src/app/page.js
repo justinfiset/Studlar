@@ -50,19 +50,12 @@ export default function Home() {
         setReload(!reload);
     };
 
-<<<<<<< HEAD
     const displayBoards = (column) => {
         return board
             .filter((board) => board.positionX == column)
             .map((board) => {
                 return <Board key={board.id} board={board} onDelete={requestRefresh}></Board>;
             });
-=======
-    const displayBoards = () => {
-        return board.map((board) => {
-            return <Board key={board.id} board={board} onDelete={requestRefresh}></Board>;
-        });
->>>>>>> origin/main
     };
 
     return (
