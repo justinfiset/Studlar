@@ -107,7 +107,7 @@ export default function Board({ board, onDelete }) {
                             {showOptions ? "close" : "menu"}
                         </span>
                     </div>
-                    {!showOptions ? (
+            {!showOptions ? (
                         <>
                             <p>{board.description}</p>
                             {displayTasklist(board)}
