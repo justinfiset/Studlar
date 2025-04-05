@@ -100,6 +100,18 @@ def create_tasklist(tasklist: TaskListCreate, db: Session = Depends(get_db)):
 
 
 # BOARDS ROUTES
+@router.delete("/api/boards/")
+def delete_board(board: BoardDelete = Depends(), db : Session = Depends(get_db)):
+    db_board = db.query(Board).filter(board.id == Board.id and board.owner_id == Board.owner_id).first()
+    if(not db_board):
+        raise HTTPException(status_code=404, detail="Board not found")
+    
+    db.delete(db_board)
+    db.commit()
+
+    return { "message": "Board deletion sucess!"}
+    
+
 @router.get("/api/boards/", response_model=list[BoardResponse])
 def get_boards(board: BoardGet = Depends(), db: Session = Depends(get_db)):
     db_boards = db.query(Board).filter(board.owner_id == Board.owner_id).all()

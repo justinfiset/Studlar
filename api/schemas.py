@@ -35,6 +35,10 @@ class TaskListResponse(BaseModel):
         orm_mode = True
 
 # Boards
+class BoardDelete(BaseModel):
+    id: int
+    owner_id: int
+
 class BoardGet(BaseModel):
     owner_id: int
 

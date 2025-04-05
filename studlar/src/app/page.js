@@ -50,10 +50,12 @@ export default function Home() {
         setReload(!reload);
     };
 
-    const displayBoards = () => {
-        return board.map((board) => {
-            return <Board key={board.id} board={board}></Board>;
-        });
+    const displayBoards = (column) => {
+        return board
+            .filter((board) => board.positionX == column)
+            .map((board) => {
+                return <Board key={board.id} board={board} onDelete={requestRefresh}></Board>;
+            });
     };
 
     return (
@@ -66,6 +68,18 @@ export default function Home() {
             )}
 
             <section className={styles.contentHolder}>
+                <div className={styles.contentCol}>
+                    {board && displayBoards(0)}
+                </div>
+                <div className={styles.contentCol}>
+                    {board && displayBoards(1)}
+                </div>
+                <div className={styles.contentCol}>
+                    {board && displayBoards(2)}
+                </div>
+                <div className={styles.contentCol}>
+                    {board && displayBoards(3)}
+                </div>
                 {error && (
                     <article>
                         <h1>
@@ -86,8 +100,6 @@ export default function Home() {
                     </p>
                     <p>Join today and get productive!</p>
                 </article> */}
-
-                {board && displayBoards()}
             </section>
             <div className={styles.addBtn} onClick={() => setCreateModal(true)}>
                 <span className="material-icons">add</span>
