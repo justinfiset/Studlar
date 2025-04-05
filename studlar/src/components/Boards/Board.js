@@ -4,8 +4,39 @@ import { useUser } from "@/contexts/UserContext";
 
 export default function Board({ board, onDelete }) {
     const [showOptions, setShowOptions] = useState(false);
+<<<<<<< HEAD
     const [loading, setLoading] = useState(false);
     const { user } = useUser();
+=======
+    const { user } = useUser();
+
+    const delCurrentBoard = async () => {
+        try {
+            const respone = await fetch(`/api/boards/?id=${board.id}&owner_id=${user.id}`, {
+                method: "DELETE"
+            });
+            const data = await respone.json();
+
+            if (respone.ok) {
+                onDelete();
+            } else {
+                //setError("Error: " + data.error);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            //setError("Error: " + error.message);
+        }
+    };
+
+    const handleEdit = () => {
+        setShowOptions(false);
+    }
+
+    const handleDelete = () => {
+        setShowOptions(false);
+        delCurrentBoard();
+    }
+>>>>>>> origin/main
 
     const delCurrentBoard = async () => {
         setLoading(true);
@@ -128,9 +159,16 @@ export default function Board({ board, onDelete }) {
                     )}
                 </>
             ) : (
+<<<<<<< HEAD
                 <div className={styles.loading}>
                     <span className="material-icons">hourglass_top</span>
                     <p>Loading...</p>
+=======
+                <div className={styles.optionsContainer}>
+                    <p onClick={handleEdit} className="material-icons">edit</p>
+                    <p onClick={handleDelete} className={`material-icons ${styles.deleteBtn}`}>delete</p>
+                    {/* <p className="material-icons">share</p> */}
+>>>>>>> origin/main
                 </div>
             )}
         </article>
