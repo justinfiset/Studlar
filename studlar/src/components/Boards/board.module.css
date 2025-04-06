@@ -98,3 +98,8 @@
     background-color: #A3B18A;
     color: #3A5A40;
 }
+
+.saveBtn {
+    padding: 0 0.5em 0 0.5em;
+    margin-left: auto;
+}

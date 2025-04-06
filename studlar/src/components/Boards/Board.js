@@ -6,27 +6,39 @@ const maxXPosition = 3;
 
 export default function Board({ board, onDelete, onUpdate }) {
     const [showOptions, setShowOptions] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(false);
     const { user } = useUser();
+
+    const [boardName, setBoardName] = useState(board.name);
 
     const delCurrentBoard = async () => {
         try {
-            const respone = await fetch(`/api/boards/?id=${board.id}&owner_id=${user.id}`, { method: "DELETE" });
+            const respone = await fetch(
+                `/api/boards/?id=${board.id}&owner_id=${user.id}`,
+                { method: "DELETE" }
+            );
             const data = await respone.json();
 
             if (respone.ok) {
                 onDelete();
             } else {
-                //setError("Error: " + data.error);
+                console.error("Error:", data.error);
             }
         } catch (error) {
             console.error("Error:", error);
-            //setError("Error: " + error.message);
         }
     };
 
     const handleEdit = () => {
         setShowOptions(false);
-    }
+        setIsEditing(!isEditing);
+
+        if (isEditing) {
+            board.name = boardName;
+            updateBoard();
+        }
+    };
 
     const handleDelete = () => {
         setShowOptions(false);
@@ -34,27 +46,25 @@ export default function Board({ board, onDelete, onUpdate }) {
     }
 
     const updateBoard = async () => {
-        setLoading(true);
         try {
             const response = await fetch("/api/boards/", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(board)
+                body: JSON.stringify(board),
             });
 
             const data = await response.json();
             if (response.ok) {
                 onUpdate();
             } else {
-                setLoading(false);
+                console.error("Error:", data.error);
             }
         } catch (error) {
             console.error("Error:", error);
-            setLoading(false);
         }
-    }
+    };
 
     const moveCard = (shift) => {
         setShowOptions(false);
@@ -63,21 +73,22 @@ export default function Board({ board, onDelete, onUpdate }) {
             board.positionX = newXPosition;
             updateBoard();
         }
-    }
-
+    };
 
     const displayTasks = (board) => {
         return board.task_lists.map((tasklist) => {
             return (
                 <div key={tasklist.id}>
-                    {
+                    {isEditing ? (
+                        <></>
+                    ) : (
                         // Display the tasklist name only if it is not empty
                         tasklist.name && (
                             <div className={styles.subsectionHeader}>
                                 <p>{tasklist.name}</p>
                             </div>
                         )
-                    }
+                    )}
                     <div
                         className="todolist-task"
                         key={tasklist.id}
@@ -112,13 +123,26 @@ export default function Board({ board, onDelete, onUpdate }) {
             </div>
             {!showOptions ? (
                 <>
-                    <p>{board.description}</p>
-                    {displayTasklist(board)}
-                    <div className="todolist-task">
-                        <p>
-                            <strong>+ Ajouter un item</strong>
-                        </p>
-                        <span></span>
+                    <div className={styles.draggableHeader}></div>
+                    <div className="card-header">
+                        {isEditing ? (
+                            <input
+                                type="text"
+                                placeholder="Board Name"
+                                id="boardName"
+                                value={boardName}
+                                onChange={(e) => setBoardName(e.target.value)}
+                            />
+                        ) : (
+                            <p>{board.name}</p>
+                        )}
+                        { isEditing && <button className={styles.saveBtn} onClick={handleEdit}>Save</button>}
+                        <span
+                            className="material-icons card-header-menu"
+                            onClick={handleOptionsBtn}
+                        >
+                            {showOptions ? "close" : "menu"}
+                        </span>
                     </div>
                     {!showOptions ? (
                         <>
@@ -127,17 +151,16 @@ export default function Board({ board, onDelete, onUpdate }) {
                         </>
                     ) : (
                         <div className={styles.options}>
-                            {
-                                board.positionX > 0 && (
-                                    <div className={styles.positionArrow} onClick={moveCard.bind(this, -1)}>
-                                        <p
-                                            className={`material-icons`}
-                                        >
-                                            chevron_left
-                                        </p>
-                                    </div>
-                                )
-                            }
+                            {board.positionX > 0 && (
+                                <div
+                                    className={styles.positionArrow}
+                                    onClick={moveCard.bind(this, -1)}
+                                >
+                                    <p className={`material-icons`}>
+                                        chevron_left
+                                    </p>
+                                </div>
+                            )}
                             <div className={styles.optionsContainer}>
                                 <p
                                     onClick={handleEdit}
@@ -153,17 +176,16 @@ export default function Board({ board, onDelete, onUpdate }) {
                                 </p>
                                 {/* <p className="material-icons">share</p> */}
                             </div>
-                            {
-                                board.positionX < maxXPosition && (
-                                    <div className={styles.positionArrow} onClick={moveCard.bind(this, 1)}>
-                                        <p
-                                            className={`material-icons`}
-                                        >
-                                            chevron_right
-                                        </p>
-                                    </div>
-                                )
-                            }
+                            {board.positionX < maxXPosition && (
+                                <div
+                                    className={styles.positionArrow}
+                                    onClick={moveCard.bind(this, 1)}
+                                >
+                                    <p className={`material-icons`}>
+                                        chevron_right
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     )}
                 </>
