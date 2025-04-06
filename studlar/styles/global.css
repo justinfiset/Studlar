@@ -90,6 +90,7 @@ article p label input button {
 
 button {
     all: unset;
+    cursor: pointer;
     padding: 0.5em 1.2em;
     margin-top: 0.8em;
     background-color: #3A5A40;
@@ -128,4 +129,8 @@ input, textarea{
     border-radius: 5px;
     margin-bottom: 0.2em;
     border: solid 1px #588157;
+}
+
+.material-icons {
+    user-select: none;
 }
