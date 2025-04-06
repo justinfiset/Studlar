@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class TaskGet(BaseModel):
     list_id: int
@@ -51,6 +52,19 @@ class BoardCreate(BaseModel):
     sizeX: int = 1
     sizeY: int = 1
 
+class BoardUpdate(BaseModel):
+    id: int
+    owner_id: int
+    name: Optional[str] = None
+    description: Optional[str] = None
+    positionX: Optional[int] = None
+    positionY: Optional[int] = None
+    sizeX: Optional[int] = None
+    sizeY: Optional[int] = None
+
+    class Config:
+            orm_mode = True
+            
 class BoardResponse(BaseModel):
     id: int
     name: str

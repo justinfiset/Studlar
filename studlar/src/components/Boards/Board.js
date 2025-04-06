@@ -2,7 +2,9 @@ import { useState } from "react";
 import styles from "./board.module.css";
 import { useUser } from "@/contexts/UserContext";
 
-export default function Board({ board, onDelete }) {
+const maxXPosition = 3;
+
+export default function Board({ board, onDelete, onUpdate }) {
     const [showOptions, setShowOptions] = useState(false);
     const [loading, setLoading] = useState(false);
     const { user } = useUser();
@@ -10,12 +12,7 @@ export default function Board({ board, onDelete }) {
     const delCurrentBoard = async () => {
         setLoading(true);
         try {
-            const respone = await fetch(
-                `/api/boards/?id=${board.id}&owner_id=${user.id}`,
-                {
-                    method: "DELETE",
-                }
-            );
+            const respone = await fetch(`/api/boards/?id=${board.id}&owner_id=${user.id}`, { method: "DELETE" });
             const data = await respone.json();
 
             if (respone.ok) {
@@ -37,6 +34,39 @@ export default function Board({ board, onDelete }) {
         setShowOptions(false);
         delCurrentBoard();
     };
+
+    const updateBoard = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch("/api/boards/", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(board)
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                onUpdate();
+            } else {
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setLoading(false);
+        }
+    }
+
+    const moveCard = (shift) => {
+        setShowOptions(false);
+        const newXPosition = board.positionX + shift;
+        if (newXPosition >= 0 && newXPosition <= maxXPosition) {
+            board.positionX = newXPosition;
+            updateBoard();
+        }
+    }
+
 
     const displayTasks = (board) => {
         return board.task_lists.map((tasklist) => {
@@ -107,23 +137,50 @@ export default function Board({ board, onDelete }) {
                             {showOptions ? "close" : "menu"}
                         </span>
                     </div>
-            {!showOptions ? (
+                    {!showOptions ? (
                         <>
                             <p>{board.description}</p>
                             {displayTasklist(board)}
                         </>
                     ) : (
-                        <div className={styles.optionsContainer}>
-                            <p onClick={handleEdit} className="material-icons">
-                                edit
-                            </p>
-                            <p
-                                onClick={handleDelete}
-                                className={`material-icons ${styles.deleteBtn}`}
-                            >
-                                delete
-                            </p>
-                            {/* <p className="material-icons">share</p> */}
+                        <div className={styles.options}>
+                            {
+                                board.positionX > 0 && (
+                                    <div className={styles.positionArrow} onClick={moveCard.bind(this, -1)}>
+                                        <p
+                                            className={`material-icons`}
+                                        >
+                                            chevron_left
+                                        </p>
+                                    </div>
+                                )
+                            }
+                            <div className={styles.optionsContainer}>
+                                <p
+                                    onClick={handleEdit}
+                                    className="material-icons"
+                                >
+                                    edit
+                                </p>
+                                <p
+                                    onClick={handleDelete}
+                                    className={`material-icons ${styles.deleteBtn}`}
+                                >
+                                    delete
+                                </p>
+                                {/* <p className="material-icons">share</p> */}
+                            </div>
+                            {
+                                board.positionX < maxXPosition && (
+                                    <div className={styles.positionArrow} onClick={moveCard.bind(this, 1)}>
+                                        <p
+                                            className={`material-icons`}
+                                        >
+                                            chevron_right
+                                        </p>
+                                    </div>
+                                )
+                            }
                         </div>
                     )}
                 </>

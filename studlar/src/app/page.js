@@ -54,7 +54,7 @@ export default function Home() {
         return board
             .filter((board) => board.positionX == column)
             .map((board) => {
-                return <Board key={board.id} board={board} onDelete={requestRefresh}></Board>;
+                return <Board key={board.id} board={board} onDelete={requestRefresh} onUpdate={requestRefresh}></Board>;
             });
     };
 
