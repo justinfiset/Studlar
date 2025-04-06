@@ -42,23 +42,10 @@
 
 .contentHolder {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 25%));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     width: 100%;
-    gap: 0;
+    gap: 1.5em;
     padding: 1.5em;
-    height: 100vh;
-}
-
-.contentCol {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: fit-content;
-    border-left: solid 1px #3f6d47;
-    border-right: solid 1px #3f6d47;
-    padding: 0 1em 0 1em;
-    height: 100%;
 }
 
 .contentHolder > * {

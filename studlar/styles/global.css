@@ -49,7 +49,7 @@ nav *:hover {
 article {
     padding: 0 1em 1em 1em;
     margin: 1em;
-    border-radius: 0.5rem;
+    border-radius: 0.5em;
     background-color: #DAD7CD;
     border-color: #3A5A40;
     border: solid 2px;
@@ -67,7 +67,7 @@ article p label input button {
     display: flex;
     justify-content: space-between;
     border-bottom: solid 1px #3A5A40;;
-    font-size: 0.8em;
+    font-size: 1em;
 }
 
 .card-header * {
@@ -128,8 +128,4 @@ input, textarea{
     border-radius: 5px;
     margin-bottom: 0.2em;
     border: solid 1px #588157;
-}
-
-.material-icons {
-    user-select: none;
 }

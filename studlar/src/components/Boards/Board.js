@@ -6,11 +6,9 @@ const maxXPosition = 3;
 
 export default function Board({ board, onDelete, onUpdate }) {
     const [showOptions, setShowOptions] = useState(false);
-    const [loading, setLoading] = useState(false);
     const { user } = useUser();
 
     const delCurrentBoard = async () => {
-        setLoading(true);
         try {
             const respone = await fetch(`/api/boards/?id=${board.id}&owner_id=${user.id}`, { method: "DELETE" });
             const data = await respone.json();
@@ -28,12 +26,12 @@ export default function Board({ board, onDelete, onUpdate }) {
 
     const handleEdit = () => {
         setShowOptions(false);
-    };
+    }
 
     const handleDelete = () => {
         setShowOptions(false);
         delCurrentBoard();
-    };
+    }
 
     const updateBoard = async () => {
         setLoading(true);
@@ -99,43 +97,28 @@ export default function Board({ board, onDelete, onUpdate }) {
         });
     };
 
-    const displayTasklist = (board) => {
-        return (
-            <>
-                {board.task_lists.length > 0 ? (
-                    <>
-                        {displayTasks(board)}
-                        <div className="todolist-task">
-                            <p>
-                                <strong>+ Ajouter un item</strong>
-                            </p>
-                            <span></span>
-                        </div>
-                    </>
-                ) : (
-                    <></>
-                )}
-            </>
-        );
-    };
-
     const handleOptionsBtn = () => {
         setShowOptions(!showOptions);
-    };
+    }
 
     return (
-        <article className={styles.card}>
-            {!loading ? (
+        <article>
+            <div className={styles.draggableHeader}></div>
+            <div className="card-header">
+                <p>{board.name}</p>
+                <span className="material-icons card-header-menu" onClick={handleOptionsBtn}>
+                    {showOptions ? "close" : "menu"}
+                </span>
+            </div>
+            {!showOptions ? (
                 <>
-                    <div className={styles.draggableHeader}></div>
-                    <div className="card-header">
-                        <p>{board.name}</p>
-                        <span
-                            className="material-icons card-header-menu"
-                            onClick={handleOptionsBtn}
-                        >
-                            {showOptions ? "close" : "menu"}
-                        </span>
+                    <p>{board.description}</p>
+                    {displayTasklist(board)}
+                    <div className="todolist-task">
+                        <p>
+                            <strong>+ Ajouter un item</strong>
+                        </p>
+                        <span></span>
                     </div>
                     {!showOptions ? (
                         <>
@@ -185,9 +168,10 @@ export default function Board({ board, onDelete, onUpdate }) {
                     )}
                 </>
             ) : (
-                <div className={styles.loading}>
-                    <span className="material-icons">hourglass_top</span>
-                    <p>Loading...</p>
+                <div className={styles.optionsContainer}>
+                    <p onClick={handleEdit} className="material-icons">edit</p>
+                    <p onClick={handleDelete} className={`material-icons ${styles.deleteBtn}`}>delete</p>
+                    {/* <p className="material-icons">share</p> */}
                 </div>
             )}
         </article>
