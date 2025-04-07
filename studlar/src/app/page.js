@@ -20,6 +20,7 @@ import {
     verticalListSortingStrategy,
     useSortable,
 } from "@dnd-kit/sortable";
+import BoardColumn from "@/components/Boards/BoardColumn";
 
 export default function Home() {
     const { user } = useUser();
@@ -37,7 +38,7 @@ export default function Home() {
 
             if (respone.ok) {
                 setBoard(data);
-                console.log(data);
+                //console.log(data);
             } else {
                 setError("Error: " + data.error);
             }
@@ -79,44 +80,39 @@ export default function Home() {
 
     const sensors = useSensors(useSensor(PointerSensor));
 
-    // Gère le drag, mais sans mise à jour immédiate
     const handleDragOver = (event) => {
         const { active, over } = event;
-        // Pas de mise à jour ici, on attend le drag complet pour mettre à jour
     };
 
-    // Met à jour uniquement quand le drag est terminé (lors du release de la souris)
     const handleDragEnd = async (event) => {
         const { active, over } = event;
 
-        // S'il n'y a pas d'élément cible sous la souris, rien à faire
         if (!over) return;
+        const targetPositionX = over.id
 
-        const activeBoard = board.find((b) => b.id === active.id);
-        const overBoard = board.find((b) => b.id === over.id);
+        if (targetPositionX !== undefined) {
+            const activeBoard = board.find((b) => b.id === active.id);
+            if (!activeBoard) return;
 
-        if (!activeBoard || !overBoard) return;
+            if (activeBoard.positionX !== Number(targetPositionX)) {
+                const updatedBoard = {
+                    ...activeBoard,
+                    positionX: Number(targetPositionX),
+                };
 
-        // Si les positions sont différentes, on met à jour la position
-        if (activeBoard.positionX !== overBoard.positionX) {
-            const updatedBoard = {
-                ...activeBoard,
-                positionX: overBoard.positionX,
-            };
+                await fetch("/api/boards/", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedBoard),
+                });
 
-            // Mise à jour sur le serveur
-            await fetch("/api/boards/", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updatedBoard),
-            });
-
-            // Rafraîchissement après l'update
-            requestRefresh();
+                requestRefresh();
+            }
         }
     };
+    
 
     return (
         <>
@@ -132,18 +128,29 @@ export default function Home() {
                     <DndContext
                         sensors={sensors}
                         collisionDetection={closestCorners}
-                        onDragEnd={handleDragEnd}  // L'update se fait uniquement ici
+                        onDragEnd={handleDragEnd}
                     >
                         {Array.from({ length: 4 }, (_, index) => (
-                            <div key={index} className={styles.contentCol}>
-                                <SortableContext
-                                    strategy={verticalListSortingStrategy}
-                                    items={board.filter((item) => item.positionX === index)
-                                        .map((item) => item.id)}
-                                >
-                                    {displayBoards(index)}
-                                </SortableContext>
-                            </div>
+                            // <div key={index} data-mon-id-test={index}>
+                            //     <SortableContext
+                            //         strategy={verticalListSortingStrategy}
+                            //         items={board
+                            //             .filter((item) => item.positionX === index)
+                            //             .map((item) => item.id)}
+                            //     >
+                            //         {displayBoards(index)}
+                            //         {board.filter(
+                            //             (item) => item.positionX === index
+                            //         ).length === 0 && (
+                            //             <div className={styles.emptyColumn}>
+                            //                 <p>No board here.</p>
+                            //             </div>
+                            //         )}
+                            //     </SortableContext>
+                            // </div>
+                            <BoardColumn column={index} key={index}>
+                                {displayBoards(index)}
+                            </BoardColumn>
                         ))}
                     </DndContext>
                 )}
