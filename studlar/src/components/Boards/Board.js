@@ -1,6 +1,20 @@
 import { useState } from "react";
 import styles from "./board.module.css";
 import { useUser } from "@/contexts/UserContext";
+import { CSS } from "@dnd-kit/utilities";
+
+import {
+    DndContext,
+    closestCorners,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+    useSortable,
+  } from "@dnd-kit/sortable";
 
 const maxXPosition = 3;
 
@@ -10,7 +24,11 @@ export default function Board({ board, onDelete, onUpdate }) {
     const [loading, setLoading] = useState(false);
     const { user } = useUser();
 
+    // Editing
     const [boardName, setBoardName] = useState(board.name);
+
+    const { attributes, listeners, setNodeRef, transform, transition } =
+        useSortable({ id: board.id });
 
     const delCurrentBoard = async () => {
         try {
@@ -30,7 +48,10 @@ export default function Board({ board, onDelete, onUpdate }) {
         }
     };
 
-    const handleEdit = () => {
+    const handleEdit = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+
         setShowOptions(false);
         setIsEditing(!isEditing);
 
@@ -40,7 +61,10 @@ export default function Board({ board, onDelete, onUpdate }) {
         }
     };
 
-    const handleDelete = () => {
+    const handleDelete = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+
         setShowOptions(false);
         delCurrentBoard();
     };
@@ -119,13 +143,16 @@ export default function Board({ board, onDelete, onUpdate }) {
         );
     };
 
-    const handleOptionsBtn = () => {
+    const handleOptionsBtn = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+
         setShowOptions(!showOptions);
     };
 
     return (
-        <article className={styles.card}>
-            <div className={styles.draggableHeader}></div>
+        <article className={styles.card} ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform) }} {...attributes}>
+            <div className={styles.draggableHeader} {...listeners}></div>
             <div className="card-header">
                 {isEditing ? (
                     <>
