@@ -128,4 +128,5 @@
 .isOver {
     background-color: #A3B18A;
     border-radius: 10px;
+    border: solid 2px #DAD7CD;
 }

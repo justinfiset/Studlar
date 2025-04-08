@@ -15,6 +15,7 @@ import {
     useSensors,
     useDroppable,
 } from "@dnd-kit/core";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import {
     SortableContext,
     verticalListSortingStrategy,
@@ -27,7 +28,9 @@ export default function Home() {
     const [error, setError] = useState("");
     const [reload, setReload] = useState(false);
     const [board, setBoard] = useState(null);
-    const [createModal, setCreateModal] = useState(false);
+    const [createModal, setCreateModal] = useState(false)
+    ;
+    const [activeBoard, setActiveBoard] = useState(null);
 
     const getUserBoards = async () => {
         try {
@@ -38,7 +41,7 @@ export default function Home() {
 
             if (respone.ok) {
                 setBoard(data);
-                //console.log(data);
+                console.log(data);
             } else {
                 setError("Error: " + data.error);
             }
@@ -80,6 +83,12 @@ export default function Home() {
 
     const sensors = useSensors(useSensor(PointerSensor));
 
+    const handleDragStart = (event) => {
+        const { active } = event;
+        const boardData = board.find((b) => b.id === active.id);
+        setActiveBoard(boardData);
+    };
+
     const handleDragOver = (event) => {
         const { active, over } = event;
     };
@@ -88,29 +97,35 @@ export default function Home() {
         const { active, over } = event;
 
         if (!over) return;
-        const targetPositionX = over.id
 
-        if (targetPositionX !== undefined) {
-            const activeBoard = board.find((b) => b.id === active.id);
-            if (!activeBoard) return;
-
-            if (activeBoard.positionX !== Number(targetPositionX)) {
-                const updatedBoard = {
-                    ...activeBoard,
-                    positionX: Number(targetPositionX),
-                };
-
-                await fetch("/api/boards/", {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(updatedBoard),
-                });
-
-                requestRefresh();
-            }
+        if (over.id != null && !over.id.startsWith("column-")) return;
+        
+        console.log("over", over.id);
+        console.log("active", active.id);
+        const targetPositionX = parseInt(over.id.split("-")[1]);
+        
+        const activeBoard = board.find((b) => b.id === active.id);
+        if (!activeBoard) return;
+        
+        if (activeBoard.positionX !== targetPositionX) {
+            const updatedBoard = {
+                ...activeBoard,
+                positionX: targetPositionX,
+            };
+        
+            setBoard(prev => prev.map(b => b.id === updatedBoard.id ? updatedBoard : b));
+        
+            await fetch("/api/boards/", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedBoard),
+            });
         }
+        
+
+        setActiveBoard(null);
     };
     
 
@@ -129,27 +144,18 @@ export default function Home() {
                         sensors={sensors}
                         collisionDetection={closestCorners}
                         onDragEnd={handleDragEnd}
+                        onDragOver={handleDragOver}
+                        onDragStart={handleDragStart}
+                        modifiers={[restrictToWindowEdges]}
                     >
                         {Array.from({ length: 4 }, (_, index) => (
-                            // <div key={index} data-mon-id-test={index}>
-                            //     <SortableContext
-                            //         strategy={verticalListSortingStrategy}
-                            //         items={board
-                            //             .filter((item) => item.positionX === index)
-                            //             .map((item) => item.id)}
-                            //     >
-                            //         {displayBoards(index)}
-                            //         {board.filter(
-                            //             (item) => item.positionX === index
-                            //         ).length === 0 && (
-                            //             <div className={styles.emptyColumn}>
-                            //                 <p>No board here.</p>
-                            //             </div>
-                            //         )}
-                            //     </SortableContext>
-                            // </div>
                             <BoardColumn column={index} key={index}>
-                                {displayBoards(index)}
+                                <SortableContext
+                                    strategy={verticalListSortingStrategy}
+                                    items={board.filter((item) => item.positionX == index).map((item) => item.id)}
+                                >
+                                    {displayBoards(index)}
+                                </SortableContext>
                             </BoardColumn>
                         ))}
                     </DndContext>

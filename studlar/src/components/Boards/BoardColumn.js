@@ -3,7 +3,7 @@ import styles from "./board.module.css";
 
 export default function BoardColumn(props) {
     const { isOver, setNodeRef } = useDroppable({
-        id: props.column,
+        id: `column-${props.column}`,
     });
 
     return (

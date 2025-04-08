@@ -9,25 +9,32 @@ import {
     PointerSensor,
     useSensor,
     useSensors,
-    useDraggable,
+    useDraggable,    
 } from "@dnd-kit/core";
-
+import {
+    useSortable,
+} from "@dnd-kit/sortable";
 const maxXPosition = 3;
 
 export default function Board({ board, onDelete, onUpdate }) {
-    const {attributes, listeners, setNodeRef, transform} = useDraggable({
-        id: board.id,
-    });
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({ id: board.id });
 
-    // Move the board when draggedf    
+    // Move the board when draggedf
     const style = {
-        transform: CSS.Translate.toString(transform),
-    }
+        transform: CSS.Transform.toString(transform),
+    };
 
     const [showOptions, setShowOptions] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const { user } = useUser();
+    const [parent, setParent] = useState(null);
 
     // Editing
     const [boardName, setBoardName] = useState(board.name);
@@ -101,6 +108,8 @@ export default function Board({ board, onDelete, onUpdate }) {
         }
     };
 
+    const handleAdd = (event) => {};
+
     const displayTasks = (board) => {
         return board.task_lists.map((tasklist) => (
             <div key={tasklist.id}>
@@ -153,7 +162,12 @@ export default function Board({ board, onDelete, onUpdate }) {
     };
 
     return (
-        <article className={styles.card} ref={setNodeRef} style={style} {...attributes}>
+        <article
+            className={styles.card}
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+        >
             <div className={styles.draggableHeader} {...listeners}></div>
             <div className="card-header">
                 {isEditing ? (
@@ -173,13 +187,21 @@ export default function Board({ board, onDelete, onUpdate }) {
                     </>
                 ) : (
                     <>
-                        <p>{board.id} {board.name}</p>
-                        <span
-                            className="material-icons card-header-menu"
-                            onClick={handleOptionsBtn}
-                        >
-                            {showOptions ? "close" : "menu"}
-                        </span>
+                        <p>{board.name}</p>
+                        <div>
+                            <span
+                                className="material-icons card-header-menu"
+                                onClick={handleAdd}
+                            >
+                                add
+                            </span>
+                            <span
+                                className="material-icons card-header-menu"
+                                onClick={handleOptionsBtn}
+                            >
+                                {showOptions ? "close" : "menu"}
+                            </span>
+                        </div>
                     </>
                 )}
             </div>
