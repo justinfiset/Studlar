@@ -23,23 +23,27 @@ export default function Board({ board, onDelete, onUpdate }) {
         setNodeRef,
         transform,
         transition,
-    } = useSortable({ id: board.id });
+        isDragging
+    } = useSortable({ id: `board-${board.id}` });
 
     // Move the board when draggedf
     const style = {
+        transition,
         transform: CSS.Transform.toString(transform),
     };
 
     const [showOptions, setShowOptions] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [loading, setLoading] = useState(false);
     const { user } = useUser();
-    const [parent, setParent] = useState(null);
 
     // Editing
     const [boardName, setBoardName] = useState(board.name);
 
     const delCurrentBoard = async () => {
+        // In the hope everything goes right, we remove the board from the list
+        onDelete(board.id);
+
+        // TODO KEEP IN HERE?
         try {
             const response = await fetch(
                 `/api/boards/?id=${board.id}&owner_id=${user.id}`,
@@ -48,7 +52,7 @@ export default function Board({ board, onDelete, onUpdate }) {
             const data = await response.json();
 
             if (response.ok) {
-                onDelete();
+                
             } else {
                 console.error("Error:", data.error);
             }
@@ -163,7 +167,7 @@ export default function Board({ board, onDelete, onUpdate }) {
 
     return (
         <article
-            className={styles.card}
+            className={`${styles.card} ${isDragging ? styles.activeCard : ""}`}
             ref={setNodeRef}
             style={style}
             {...attributes}
@@ -187,7 +191,7 @@ export default function Board({ board, onDelete, onUpdate }) {
                     </>
                 ) : (
                     <>
-                        <p>{board.name}</p>
+                        <p>{board.name} {board.id}</p>
                         <div>
                             <span
                                 className="material-icons card-header-menu"
@@ -208,6 +212,7 @@ export default function Board({ board, onDelete, onUpdate }) {
 
             {!showOptions ? (
                 <>
+                    <p>{board.positionX} {board.positionY}</p>
                     <p>{board.description}</p>
                     {displayTasklist(board)}
                 </>

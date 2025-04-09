@@ -17,20 +17,35 @@ import {
 } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import {
+    arrayMove,
     SortableContext,
-    verticalListSortingStrategy,
     useSortable,
 } from "@dnd-kit/sortable";
 import BoardColumn from "@/components/Boards/BoardColumn";
 
 export default function Home() {
+    const [columns, setColumns] = useState([
+        "col-1",
+        "col-2",
+        "col-3",
+        "col-4",
+    ]);
+
     const { user } = useUser();
     const [error, setError] = useState("");
     const [reload, setReload] = useState(false);
-    const [board, setBoard] = useState(null);
-    const [createModal, setCreateModal] = useState(false)
-    ;
-    const [activeBoard, setActiveBoard] = useState(null);
+    const [boards, setBoards] = useState([]);
+
+    const [createModal, setCreateModal] = useState(false);
+    const [forceRefresh, setForceRefresh] = useState(0);
+
+    const refreshColumns = () => {
+        setForceRefresh(prev => prev + 1);
+    };
+
+    // Dnd
+    //const [activeDragId, setActiveDragId] = useState(null);
+    const [overColumn, setOverColumn] = useState(-1);
 
     const getUserBoards = async () => {
         try {
@@ -40,7 +55,7 @@ export default function Home() {
             const data = await respone.json();
 
             if (respone.ok) {
-                setBoard(data);
+                setBoards(data);
                 console.log(data);
             } else {
                 setError("Error: " + data.error);
@@ -66,68 +81,97 @@ export default function Home() {
         setReload(!reload);
     };
 
-    const displayBoards = (column) => {
-        return board
-            .filter((board) => board.positionX == column)
-            .map((board) => {
-                return (
-                    <Board
-                        key={board.id}
-                        board={board}
-                        onDelete={requestRefresh}
-                        onUpdate={requestRefresh}
-                    ></Board>
-                );
-            });
-    };
-
     const sensors = useSensors(useSensor(PointerSensor));
 
     const handleDragStart = (event) => {
-        const { active } = event;
-        const boardData = board.find((b) => b.id === active.id);
-        setActiveBoard(boardData);
+        // const { active } = event;
+        // setActiveDragId(active.id);
+        setOverColumn(-1);
     };
 
-    const handleDragOver = (event) => {
+    const handleDragMove = (event) => {
         const { active, over } = event;
+        const overBoard = getBoard(over.id);
+        setOverColumn(overBoard ? overBoard.positionX : -1);
     };
+
+    const getBoardCol = (boardId) => {
+        return boards.find(board => board.id === boardId).positionX;
+    }
+
+    const getBoardColPos = (boardId) => {
+        const posX = getBoardCol(boardId);
+        return boards
+            .filter(board => board.positionX == posX)
+            .findIndex(board => board.id === boardId);
+    }
+    
+    const getBoard = (boardId) => boards.find(board => board.id == boardId.split("-")[1]);
 
     const handleDragEnd = async (event) => {
         const { active, over } = event;
 
-        if (!over) return;
+        if(active.id.toString().includes("board")) {
+            // Board to board
+            if(over.id.toString().includes("board")) {
+                const activeBoard = getBoard(active.id);
+                const overBoard = getBoard(over.id);
+                if(!activeBoard || !overBoard) return;
 
-        if (over.id != null && !over.id.startsWith("column-")) return;
-        
-        console.log("over", over.id);
-        console.log("active", active.id);
-        const targetPositionX = parseInt(over.id.split("-")[1]);
-        
-        const activeBoard = board.find((b) => b.id === active.id);
-        if (!activeBoard) return;
-        
-        if (activeBoard.positionX !== targetPositionX) {
-            const updatedBoard = {
-                ...activeBoard,
-                positionX: targetPositionX,
-            };
-        
-            setBoard(prev => prev.map(b => b.id === updatedBoard.id ? updatedBoard : b));
-        
-            await fetch("/api/boards/", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updatedBoard),
-            });
+                const activeBoardCol = getBoardCol(activeBoard.id);
+                const overBoardCol = getBoardCol(overBoard.id);
+
+                const activeBoardIndex = getBoardColPos(activeBoard.id);
+                const overBoardIndex = getBoardColPos(overBoard.id);
+
+                if(activeBoardCol === overBoardCol) {
+                    let newBoardsCol = boards.filter(board => board.positionX === overBoardCol);
+                    newBoardsCol = arrayMove(newBoardsCol, activeBoardIndex, overBoardIndex);
+
+                    setBoards(prev => {
+                        return prev.filter(board => board.positionX !== overBoardCol)
+                            .concat(newBoardsCol);
+                    });
+                    setOverColumn(-1);
+                } else {
+                    let oldRow = boards.filter(board => board.positionX === activeBoardCol);
+                    let newRow = boards.filter(board => board.positionX === overBoardCol);
+                    const [removedBoard] = oldRow.splice(activeBoardIndex, 1);
+                    removedBoard.positionX = overBoardCol;
+
+                    newRow.splice(overBoardIndex, 0, removedBoard);
+                    setBoards(prev => {
+                        return prev.filter(board => board.positionX !== activeBoardCol && board.positionX !== overBoardCol)
+                            .concat(oldRow).concat(newRow);
+                    });
+                    setOverColumn(-1);
+                }
+
+                refreshColumns();
+            }
+
+            // Board to column
+            if(over.id.toString().includes("col")) {
+                const activeBoard = getBoard(active.id);
+                if(!activeBoard) return;
+
+                const activeBoardCol = getBoardCol(activeBoard.id);
+                const overCol = over.id.split("-")[1];
+
+                if(activeBoardCol != overCol) {
+                    let oldRow = boards.filter(board => board.positionX === activeBoardCol);
+                    const [removedBoard] = oldRow.splice(getBoardColPos(activeBoard.id), 1);
+                    removedBoard.positionX = parseInt(overCol);
+                    console.log(removedBoard);
+                    setBoards(prev => {
+                        return prev.filter(board => board.positionX !== activeBoardCol && board.id !== removedBoard.id)
+                            .concat(oldRow).concat(removedBoard);
+                    });
+                    refreshColumns();
+                }
+            }
         }
-        
-
-        setActiveBoard(null);
     };
-    
 
     return (
         <>
@@ -139,23 +183,29 @@ export default function Home() {
             )}
 
             <section className={styles.contentHolder}>
-                {board && (
+                {boards && (
                     <DndContext
                         sensors={sensors}
                         collisionDetection={closestCorners}
                         onDragEnd={handleDragEnd}
-                        onDragOver={handleDragOver}
+                        onDragMove={handleDragMove}
                         onDragStart={handleDragStart}
                         modifiers={[restrictToWindowEdges]}
                     >
                         {Array.from({ length: 4 }, (_, index) => (
-                            <BoardColumn column={index} key={index}>
-                                <SortableContext
-                                    strategy={verticalListSortingStrategy}
-                                    items={board.filter((item) => item.positionX == index).map((item) => item.id)}
-                                >
-                                    {displayBoards(index)}
-                                </SortableContext>
+                            <BoardColumn
+                                boards={boards.filter(board => board && board.positionX === index)}
+                                column={index}
+                                key={`col-${index}-${forceRefresh}`}
+                                overColumn={overColumn}
+
+                                onUpdate={requestRefresh}
+                                onDelete={async (id) => {
+                                    const newBoards = boards.filter(board => board.id !== id);
+                                    setBoards(newBoards);
+                                    refreshColumns();
+                                }}
+                            >
                             </BoardColumn>
                         ))}
                     </DndContext>
