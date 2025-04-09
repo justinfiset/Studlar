@@ -14,6 +14,7 @@ import {
     useSensor,
     useSensors,
     useDroppable,
+    DragOverlay,
 } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import {
@@ -44,7 +45,7 @@ export default function Home() {
     };
 
     // Dnd
-    //const [activeDragId, setActiveDragId] = useState(null);
+    const [activeDragId, setActiveDragId] = useState(null);
     const [overColumn, setOverColumn] = useState(-1);
 
     const getUserBoards = async () => {
@@ -81,11 +82,15 @@ export default function Home() {
         setReload(!reload);
     };
 
-    const sensors = useSensors(useSensor(PointerSensor));
+    const sensors = useSensors(useSensor(PointerSensor, {
+        activationConstraint: {
+            distance: 5, // Start the drag after moving 5 pixels
+        },
+    }));
 
     const handleDragStart = (event) => {
-        // const { active } = event;
-        // setActiveDragId(active.id);
+        const { active } = event;
+        setActiveDragId(event.active.id);
         setOverColumn(-1);
     };
 
@@ -110,6 +115,8 @@ export default function Home() {
 
     const handleDragEnd = async (event) => {
         const { active, over } = event;
+
+        setActiveDragId(null);
 
         if(active.id.toString().includes("board")) {
             // Board to board
@@ -208,6 +215,19 @@ export default function Home() {
                             >
                             </BoardColumn>
                         ))}
+                        <DragOverlay
+                            style={{
+                                transition: "transform 0.02s",
+                            }}
+                        >
+                            { activeDragId && (
+                                <Board
+                                    board={getBoard(activeDragId)}
+                                    onDelete={() => {}}
+                                    onUpdate={() => {}}
+                                />
+                            )}
+                        </DragOverlay>
                     </DndContext>
                 )}
                 {error && (

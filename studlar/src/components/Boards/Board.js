@@ -28,7 +28,7 @@ export default function Board({ board, onDelete, onUpdate }) {
 
     // Move the board when draggedf
     const style = {
-        transition,
+        transition: isDragging ? "none" : transition,
         transform: CSS.Transform.toString(transform),
     };
 
