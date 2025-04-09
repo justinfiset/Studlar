@@ -11,21 +11,25 @@ import {
     PointerSensor,
     useSensor,
     useSensors,
-    useDraggable,    
+    useDraggable,
 } from "@dnd-kit/core";
-import {
-    useSortable,
-} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
+import Tasklist from "../Tasklist/Tasklist";
 const maxXPosition = 3;
 
-export default function Board({ board, onDelete, onUpdate, showAddboardComponent }) {
+export default function Board({
+    board,
+    onDelete,
+    onUpdate,
+    showAddboardComponent,
+}) {
     const {
         attributes,
         listeners,
         setNodeRef,
         transform,
         transition,
-        isDragging
+        isDragging,
     } = useSortable({ id: `board-${board.id}` });
 
     // Move the board when draggedf
@@ -54,7 +58,6 @@ export default function Board({ board, onDelete, onUpdate, showAddboardComponent
             const data = await response.json();
 
             if (response.ok) {
-                
             } else {
                 console.error("Error:", data.error);
             }
@@ -114,50 +117,14 @@ export default function Board({ board, onDelete, onUpdate, showAddboardComponent
         }
     };
 
-    const handleAdd = (event) => {showAddboardComponent(board.id)};
-
-    const displayTasks = (board) => {
-        return board.task_lists.map((tasklist) => (
-            <div key={tasklist.id}>
-                {!isEditing && tasklist.name && (
-                    <div className={styles.subsectionHeader}>
-                        <p>{tasklist.name}</p>
-                    </div>
-                )}
-                <div
-                    className="todolist-task"
-                    key={tasklist.id}
-                    draggable="true"
-                >
-                    <span className="material-icons">
-                        radio_button_unchecked
-                    </span>
-                    <p>{tasklist.name}</p>
-                    <span className={`material-icons ${styles.dragIcon}`}>
-                        drag_indicator
-                    </span>
-                </div>
-                <span></span>
-            </div>
-        ));
+    const handleAdd = (event) => {
+        showAddboardComponent(board.id);
     };
 
     const displayTasklist = (board) => {
-        return (
-            <>
-                {board.task_lists.length > 0 && (
-                    <>
-                        {displayTasks(board)}
-                        <div className="todolist-task">
-                            <p>
-                                <strong>+ Ajouter un item</strong>
-                            </p>
-                            <span></span>
-                        </div>
-                    </>
-                )}
-            </>
-        );
+        return board.task_lists.map((tasklist) => (
+            <Tasklist tasklist={tasklist} key={`tasklist-${tasklist.id}`} />
+        ));
     };
 
     const handleOptionsBtn = (event) => {
@@ -193,7 +160,7 @@ export default function Board({ board, onDelete, onUpdate, showAddboardComponent
                     </>
                 ) : (
                     <>
-                        <p>{board.name} {board.id}</p>
+                        <p>{board.name}</p>
                         <div>
                             <span
                                 className="material-icons card-header-menu"
@@ -214,8 +181,9 @@ export default function Board({ board, onDelete, onUpdate, showAddboardComponent
 
             {!showOptions ? (
                 <>
-                    <p>{board.positionX} {board.positionY}</p>
-                    <p>{board.description}</p>
+                    <p>
+                        {board.positionX} {board.positionY} {board.description}
+                    </p>
                     {displayTasklist(board)}
                 </>
             ) : (

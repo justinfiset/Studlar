@@ -56,6 +56,12 @@
     color: #3A5A40;
 }
 
+.disabledOption {
+    background-color: #DAD7CD;
+    color: #3A5A40;
+    cursor: not-allowed;
+}
+
 .deleteBtn {
     background-color: #e2514e;
     color: #DAD7CD;
