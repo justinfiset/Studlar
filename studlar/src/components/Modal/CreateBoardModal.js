@@ -55,7 +55,7 @@ export default function CreateBoardModel(props) {
             onClose={props.onClose}
         >
             <form className={styles.formContent}>
-                <label>New board name : </label>
+                <label><strong>New board name</strong> : </label>
                 <input
                     type="text"
                     name="boardname"
@@ -63,7 +63,7 @@ export default function CreateBoardModel(props) {
                     placeholder="Your board name"
                     required
                 />
-                <label>Description : </label>
+                <label><strong>Description</strong> (optional) : </label>
                 <textarea
                     rows="5"
                     cols="40"

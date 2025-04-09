@@ -5,7 +5,7 @@ import { useState } from "react";
 export default function Modal(props) {
     return (
         <div className={styles.modalBackground}>
-            <article>
+            <article className={styles.modalContainer}>
                 <div className={styles.cardHeader}>
                     <p>{props.title}</p>
                     <span className={`material-icons ${styles.cardHeaderClose}`} onClick={props.onClose}>

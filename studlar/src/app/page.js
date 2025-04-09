@@ -20,6 +20,7 @@ import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { arrayMove, SortableContext, useSortable } from "@dnd-kit/sortable";
 import BoardColumn from "@/components/Boards/BoardColumn";
 import { ClientOnly } from "@/components/ClientOnly";
+import AddBoardComponentModal from "@/components/Modal/AddBoardComponentModal";
 
 export default function Home() {
     const [columns, setColumns] = useState([
@@ -33,9 +34,16 @@ export default function Home() {
     const [error, setError] = useState("");
     const [reload, setReload] = useState(false);
     const [boards, setBoards] = useState([]);
-
-    const [createModal, setCreateModal] = useState(false);
     const [forceRefresh, setForceRefresh] = useState(0);
+
+    const [activeBoardId, setActiveBoardId] = useState(null);
+    const [createModal, setCreateModal] = useState(false);
+    const [addComponentModal, setAddComponentModal] = useState(false);
+
+    const showAddboardComponent = (id) => {
+        setActiveBoardId(id);
+        setAddComponentModal(true);
+    }
 
     const refreshColumns = () => {
         setForceRefresh((prev) => prev + 1);
@@ -157,7 +165,7 @@ export default function Home() {
                     const [removedBoard] = oldRow.splice(activeBoardIndex, 1);
                     removedBoard.positionX = overBoardCol;
 
-                    newRow.splice(overBoardIndex, 0, removedBoard);
+                    newRow.splice(overBoardIndex + 1, 0, removedBoard);
                     setBoards((prev) => {
                         return prev
                             .filter(
@@ -189,14 +197,14 @@ export default function Home() {
                     const [removedBoard] = oldRow.splice(getBoardColPos(activeBoard.id), 1);
                     removedBoard.positionX = parseInt(overCol);
                     const newRow = boards.filter(
-                        (board) => board.positionX === overBoardCol
+                        (board) => board.positionX === overCol
                     );
-                    newRoe.splice(newBoards.length - 1, 0, removedBoard);
+                    newRow.push(removedBoard);
                     setBoards((prev) => {
                         return prev
                             .filter(
                                 (board) =>
-                                    board.positionX !== activeBoardCol && board.positionX !== overCol
+                                    board.positionX !== activeBoardCol && board.positionX !== overCol && board.id !== activeBoard.id
                             )
                             .concat(oldRow)
                             .concat(newRow);
@@ -244,6 +252,7 @@ export default function Home() {
                                         setBoards(newBoards);
                                         refreshColumns();
                                     }}
+                                    showAddboardComponent={showAddboardComponent}
                                 ></BoardColumn>
                             ))}
                             <DragOverlay
@@ -279,6 +288,12 @@ export default function Home() {
                 <CreateBoardModel
                     onClose={() => setCreateModal(false)}
                     onCreate={requestRefresh}
+                />
+            )}
+            {addComponentModal && (
+                <AddBoardComponentModal
+                    id={activeBoardId}
+                    onClose={() => setAddComponentModal(false)}
                 />
             )}
         </>

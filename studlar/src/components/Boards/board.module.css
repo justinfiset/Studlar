@@ -41,13 +41,19 @@
 }
 
 .optionsContainer > * {
+    text-align: center;
     cursor: pointer;
     padding: 0.5em;
     border: 1px solid #3A5A40;
     border-radius: 5px;
     background-color: #588157;
     color: #DAD7CD;
-    margin: 0.5em;
+    margin: 0.5em;  
+}
+
+.activeOption {
+    background-color: #A3B18A;
+    color: #3A5A40;
 }
 
 .deleteBtn {

@@ -50,6 +50,7 @@ export default function BoardColumn(props) {
                                 board={board}
                                 onDelete={props.onDelete}
                                 onUpdate={props.onUpdate}
+                                showAddboardComponent={props.showAddboardComponent}
                             />
                         );
                     })}

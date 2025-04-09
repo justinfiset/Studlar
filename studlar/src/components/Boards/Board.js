@@ -18,7 +18,7 @@ import {
 } from "@dnd-kit/sortable";
 const maxXPosition = 3;
 
-export default function Board({ board, onDelete, onUpdate }) {
+export default function Board({ board, onDelete, onUpdate, showAddboardComponent }) {
     const {
         attributes,
         listeners,
@@ -114,7 +114,7 @@ export default function Board({ board, onDelete, onUpdate }) {
         }
     };
 
-    const handleAdd = (event) => {};
+    const handleAdd = (event) => {showAddboardComponent(board.id)};
 
     const displayTasks = (board) => {
         return board.task_lists.map((tasklist) => (
