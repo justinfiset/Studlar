@@ -17,12 +17,9 @@ import {
     DragOverlay,
 } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
-import {
-    arrayMove,
-    SortableContext,
-    useSortable,
-} from "@dnd-kit/sortable";
+import { arrayMove, SortableContext, useSortable } from "@dnd-kit/sortable";
 import BoardColumn from "@/components/Boards/BoardColumn";
+import { ClientOnly } from "@/components/ClientOnly";
 
 export default function Home() {
     const [columns, setColumns] = useState([
@@ -41,7 +38,7 @@ export default function Home() {
     const [forceRefresh, setForceRefresh] = useState(0);
 
     const refreshColumns = () => {
-        setForceRefresh(prev => prev + 1);
+        setForceRefresh((prev) => prev + 1);
     };
 
     // Dnd
@@ -82,11 +79,13 @@ export default function Home() {
         setReload(!reload);
     };
 
-    const sensors = useSensors(useSensor(PointerSensor, {
-        activationConstraint: {
-            distance: 5, // Start the drag after moving 5 pixels
-        },
-    }));
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 5, // Start the drag after moving 5 pixels
+            },
+        })
+    );
 
     const handleDragStart = (event) => {
         const { active } = event;
@@ -101,29 +100,30 @@ export default function Home() {
     };
 
     const getBoardCol = (boardId) => {
-        return boards.find(board => board.id === boardId).positionX;
-    }
+        return boards.find((board) => board.id === boardId).positionX;
+    };
 
     const getBoardColPos = (boardId) => {
         const posX = getBoardCol(boardId);
         return boards
-            .filter(board => board.positionX == posX)
-            .findIndex(board => board.id === boardId);
-    }
-    
-    const getBoard = (boardId) => boards.find(board => board.id == boardId.split("-")[1]);
+            .filter((board) => board.positionX == posX)
+            .findIndex((board) => board.id === boardId);
+    };
+
+    const getBoard = (boardId) =>
+        boards.find((board) => board.id == boardId.split("-")[1]);
 
     const handleDragEnd = async (event) => {
         const { active, over } = event;
 
         setActiveDragId(null);
 
-        if(active.id.toString().includes("board")) {
+        if (active.id.toString().includes("board")) {
             // Board to board
-            if(over.id.toString().includes("board")) {
+            if (over.id.toString().includes("board")) {
                 const activeBoard = getBoard(active.id);
                 const overBoard = getBoard(over.id);
-                if(!activeBoard || !overBoard) return;
+                if (!activeBoard || !overBoard) return;
 
                 const activeBoardCol = getBoardCol(activeBoard.id);
                 const overBoardCol = getBoardCol(overBoard.id);
@@ -131,25 +131,42 @@ export default function Home() {
                 const activeBoardIndex = getBoardColPos(activeBoard.id);
                 const overBoardIndex = getBoardColPos(overBoard.id);
 
-                if(activeBoardCol === overBoardCol) {
-                    let newBoardsCol = boards.filter(board => board.positionX === overBoardCol);
-                    newBoardsCol = arrayMove(newBoardsCol, activeBoardIndex, overBoardIndex);
+                if (activeBoardCol === overBoardCol) {
+                    let newBoardsCol = boards.filter(
+                        (board) => board.positionX === overBoardCol
+                    );
+                    newBoardsCol = arrayMove(
+                        newBoardsCol,
+                        activeBoardIndex,
+                        overBoardIndex
+                    );
 
-                    setBoards(prev => {
-                        return prev.filter(board => board.positionX !== overBoardCol)
+                    setBoards((prev) => {
+                        return prev
+                            .filter((board) => board.positionX !== overBoardCol)
                             .concat(newBoardsCol);
                     });
                     setOverColumn(-1);
                 } else {
-                    let oldRow = boards.filter(board => board.positionX === activeBoardCol);
-                    let newRow = boards.filter(board => board.positionX === overBoardCol);
+                    let oldRow = boards.filter(
+                        (board) => board.positionX === activeBoardCol
+                    );
+                    let newRow = boards.filter(
+                        (board) => board.positionX === overBoardCol
+                    );
                     const [removedBoard] = oldRow.splice(activeBoardIndex, 1);
                     removedBoard.positionX = overBoardCol;
 
                     newRow.splice(overBoardIndex, 0, removedBoard);
-                    setBoards(prev => {
-                        return prev.filter(board => board.positionX !== activeBoardCol && board.positionX !== overBoardCol)
-                            .concat(oldRow).concat(newRow);
+                    setBoards((prev) => {
+                        return prev
+                            .filter(
+                                (board) =>
+                                    board.positionX !== activeBoardCol &&
+                                    board.positionX !== overBoardCol
+                            )
+                            .concat(oldRow)
+                            .concat(newRow);
                     });
                     setOverColumn(-1);
                 }
@@ -158,21 +175,32 @@ export default function Home() {
             }
 
             // Board to column
-            if(over.id.toString().includes("col")) {
+            if (over.id.toString().includes("col")) {
                 const activeBoard = getBoard(active.id);
-                if(!activeBoard) return;
+                if (!activeBoard) return;
 
                 const activeBoardCol = getBoardCol(activeBoard.id);
                 const overCol = over.id.split("-")[1];
 
-                if(activeBoardCol != overCol) {
-                    let oldRow = boards.filter(board => board.positionX === activeBoardCol);
-                    const [removedBoard] = oldRow.splice(getBoardColPos(activeBoard.id), 1);
+                if (activeBoardCol != overCol) {
+                    let oldRow = boards.filter(
+                        (board) => board.positionX === activeBoardCol
+                    );
+                    const [removedBoard] = oldRow.splice(
+                        getBoardColPos(activeBoard.id),
+                        1
+                    );
                     removedBoard.positionX = parseInt(overCol);
                     console.log(removedBoard);
-                    setBoards(prev => {
-                        return prev.filter(board => board.positionX !== activeBoardCol && board.id !== removedBoard.id)
-                            .concat(oldRow).concat(removedBoard);
+                    setBoards((prev) => {
+                        return prev
+                            .filter(
+                                (board) =>
+                                    board.positionX !== activeBoardCol &&
+                                    board.id !== removedBoard.id
+                            )
+                            .concat(oldRow)
+                            .concat(removedBoard);
                     });
                     refreshColumns();
                 }
@@ -191,44 +219,49 @@ export default function Home() {
 
             <section className={styles.contentHolder}>
                 {boards && (
-                    <DndContext
-                        sensors={sensors}
-                        collisionDetection={closestCorners}
-                        onDragEnd={handleDragEnd}
-                        onDragMove={handleDragMove}
-                        onDragStart={handleDragStart}
-                        modifiers={[restrictToWindowEdges]}
-                    >
-                        {Array.from({ length: 4 }, (_, index) => (
-                            <BoardColumn
-                                boards={boards.filter(board => board && board.positionX === index)}
-                                column={index}
-                                key={`col-${index}-${forceRefresh}`}
-                                overColumn={overColumn}
-
-                                onUpdate={requestRefresh}
-                                onDelete={async (id) => {
-                                    const newBoards = boards.filter(board => board.id !== id);
-                                    setBoards(newBoards);
-                                    refreshColumns();
+                    <ClientOnly>
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCorners}
+                            onDragEnd={handleDragEnd}
+                            onDragMove={handleDragMove}
+                            onDragStart={handleDragStart}
+                            modifiers={[restrictToWindowEdges]}
+                        >
+                            {Array.from({ length: 4 }, (_, index) => (
+                                <BoardColumn
+                                    boards={boards.filter(
+                                        (board) =>
+                                            board && board.positionX === index
+                                    )}
+                                    column={index}
+                                    key={`col-${index}-${forceRefresh}`}
+                                    overColumn={overColumn}
+                                    onUpdate={requestRefresh}
+                                    onDelete={async (id) => {
+                                        const newBoards = boards.filter(
+                                            (board) => board.id !== id
+                                        );
+                                        setBoards(newBoards);
+                                        refreshColumns();
+                                    }}
+                                ></BoardColumn>
+                            ))}
+                            <DragOverlay
+                                style={{
+                                    transition: "transform 0.02s",
                                 }}
                             >
-                            </BoardColumn>
-                        ))}
-                        <DragOverlay
-                            style={{
-                                transition: "transform 0.02s",
-                            }}
-                        >
-                            { activeDragId && (
-                                <Board
-                                    board={getBoard(activeDragId)}
-                                    onDelete={() => {}}
-                                    onUpdate={() => {}}
-                                />
-                            )}
-                        </DragOverlay>
-                    </DndContext>
+                                {activeDragId && (
+                                    <Board
+                                        board={getBoard(activeDragId)}
+                                        onDelete={() => {}}
+                                        onUpdate={() => {}}
+                                    />
+                                )}
+                            </DragOverlay>
+                        </DndContext>
+                    </ClientOnly>
                 )}
                 {error && (
                     <article>

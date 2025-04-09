@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import styles from "./board.module.css";
 import { useUser } from "@/contexts/UserContext";
