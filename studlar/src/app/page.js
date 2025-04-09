@@ -148,10 +148,10 @@ export default function Home() {
                     });
                     setOverColumn(-1);
                 } else {
-                    let oldRow = boards.filter(
+                    const oldRow = boards.filter(
                         (board) => board.positionX === activeBoardCol
                     );
-                    let newRow = boards.filter(
+                    const newRow = boards.filter(
                         (board) => board.positionX === overBoardCol
                     );
                     const [removedBoard] = oldRow.splice(activeBoardIndex, 1);
@@ -183,24 +183,23 @@ export default function Home() {
                 const overCol = over.id.split("-")[1];
 
                 if (activeBoardCol != overCol) {
-                    let oldRow = boards.filter(
+                    const oldRow = boards.filter(
                         (board) => board.positionX === activeBoardCol
                     );
-                    const [removedBoard] = oldRow.splice(
-                        getBoardColPos(activeBoard.id),
-                        1
-                    );
+                    const [removedBoard] = oldRow.splice(getBoardColPos(activeBoard.id), 1);
                     removedBoard.positionX = parseInt(overCol);
-                    console.log(removedBoard);
+                    const newRow = boards.filter(
+                        (board) => board.positionX === overBoardCol
+                    );
+                    newRoe.splice(newBoards.length - 1, 0, removedBoard);
                     setBoards((prev) => {
                         return prev
                             .filter(
                                 (board) =>
-                                    board.positionX !== activeBoardCol &&
-                                    board.id !== removedBoard.id
+                                    board.positionX !== activeBoardCol && board.positionX !== overCol
                             )
                             .concat(oldRow)
-                            .concat(removedBoard);
+                            .concat(newRow);
                     });
                     refreshColumns();
                 }

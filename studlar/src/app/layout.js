@@ -25,7 +25,7 @@ function Header() {
 export default function RootLayout({ children }) {
     return (
         <UserProvider>
-            <html lang="en" data-lt-installed="true">
+            <html lang="en" data-lt-installed="true" suppressHydrationWarning="true">
                 <head>
                     <meta charSet="UTF-8" />
                     <meta

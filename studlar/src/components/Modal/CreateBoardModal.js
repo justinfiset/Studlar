@@ -1,17 +1,17 @@
 import { useUser } from "@/contexts/UserContext";
 import styles from "./modal.module.css";
 import { useState } from "react";
+import Modal from "./Modal";
 
 export default function CreateBoardModel(props) {
     const { user } = useUser();
-    const [error, setError] = useState("");
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         const boardname = document.getElementById("boardname").value;
         const description = document.getElementById("description").value;
-        
+
         if (!user) {
             setError("Error: user not logged in");
             return;
@@ -47,38 +47,33 @@ export default function CreateBoardModel(props) {
             setError("Error: " + error.message);
             console.error("Error:", error);
         }
-    }
+    };
 
     return (
-        <div className={styles.modalBackground}>
-            <article>
-                <div className={styles.cardHeader}>
-                    <p>Create a new board</p>
-                    <span className={`material-icons ${styles.cardHeaderClose}`} onClick={props.onClose}>
-                        close
-                    </span>
-                </div>
-                <form className={styles.formContent}>
-                        <label>New board name : </label>
-                        <input
-                            type="text"
-                            name="boardname"
-                            id="boardname"
-                            placeholder="Your board name"
-                            required
-                        />
-                        <label>Description : </label>
-                        <textarea
-                            rows="5"
-                            cols="40"
-                            type="text"
-                            name="description"
-                            id="description"
-                            placeholder="Very useful board description..."
-                        />
-                        <button onClick={handleSubmit}>Create new board</button>
-                    </form>
-            </article>
-        </div>
+        <Modal 
+            title="Create a new board"
+            onClose={props.onClose}
+        >
+            <form className={styles.formContent}>
+                <label>New board name : </label>
+                <input
+                    type="text"
+                    name="boardname"
+                    id="boardname"
+                    placeholder="Your board name"
+                    required
+                />
+                <label>Description : </label>
+                <textarea
+                    rows="5"
+                    cols="40"
+                    type="text"
+                    name="description"
+                    id="description"
+                    placeholder="Very useful board description..."
+                />
+                <button onClick={handleSubmit}>Create new board</button>
+            </form>
+        </Modal>
     );
 }
