@@ -1,7 +1,6 @@
 "use client";
 
 import styles from "@//app/home.module.css";
-import "./index.css";
 import { useEffect, useState } from "react";
 import CreateBoardModel from "@/components/Modal/CreateBoardModal";
 import { useUser } from "@/contexts/UserContext";

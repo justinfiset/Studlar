@@ -1,0 +1,55 @@
+.tasklistTask  {
+    margin: 5px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    border-bottom: solid 1px #A3B18A;
+    border-radius: 5px;
+}
+
+.tasklistTask * {
+    margin: 0;
+    margin-right: 10px;
+}
+
+.tasklistTask:hover {
+    background-color: #A3B18A;
+    transform: scale(1.01);
+}
+
+.tasklistTask:nth-last-child > *:last-child {
+    margin-left: auto;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.tasklistTask:nth-last-child > *:last-child:hover {
+    background: #588157;
+}
+
+.tasklistTask:last-child  {
+    padding: 0;
+}
+
+.tasklistTask:last-child * {
+    margin-left: 0;
+}
+
+.taskInput {
+    width: 100%;
+    padding: 5px;
+    margin: 0;
+}
+
+.taskForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.addTask {
+    margin: 0.4em;
+}
