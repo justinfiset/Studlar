@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./tasklist.module.css";
 import boardStyles from "@/components/Boards/board.module.css";
 import TaskStatusSelector from "./TaskStatusSelector";
+import Task from "./Task";
 
 export default function Tasklist({ tasklist }) {
     const statusList = [
@@ -124,32 +125,15 @@ export default function Tasklist({ tasklist }) {
                     </div>
                 )}
                 {tasklist.tasks.map((task) => (
-                    <div
-                        className={styles.tasklistTask}
-                        key={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
-                    >
-                        <span className="material-icons">
-                            {statusList.find(
+                    <Task
+                        task={task}
+                        icon={
+                            statusList.find(
                                 (status) => status.name === task.status
-                            )?.icon || "radio_button_unchecked"}
-                        </span>
-
-                        <span
-                            className="material-icons"
-                            onClick={() => {
-                                setClickedTask(task);
-                                hanleShowStatusDialog();
-                            }}
-                        >
-                            arrow_drop_down
-                        </span>
-                        <p>{task.title}</p>
-                        <span
-                            className={`material-icons ${boardStyles.dragIcon}`}
-                        >
-                            drag_indicator
-                        </span>
-                    </div>
+                            )?.icon || "radio_button_unchecked"
+                        }
+                        key={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
+                    />
                 ))}
                 <div
                     className={styles.tasklistTask}
