@@ -33,7 +33,11 @@ export default function Home() {
     const [error, setError] = useState("");
     const [reload, setReload] = useState(false);
     const [boards, setBoards] = useState([]);
+
     const [forceRefresh, setForceRefresh] = useState(0);
+    const refreshColumns = () => {
+        setForceRefresh((prev) => prev + 1);
+    };
 
     const [activeBoardId, setActiveBoardId] = useState(null);
     const [createModal, setCreateModal] = useState(false);
@@ -43,10 +47,6 @@ export default function Home() {
         setActiveBoardId(id);
         setAddComponentModal(true);
     }
-
-    const refreshColumns = () => {
-        setForceRefresh((prev) => prev + 1);
-    };
 
     // Dnd
     const [activeDragId, setActiveDragId] = useState(null);
