@@ -101,9 +101,10 @@ export default function Tasklist({ tasklist }) {
                     x={lastClickedCursorPosition.x}
                     y={lastClickedCursorPosition.y}
                     statusMap={statusList}
+                    currentStatus={clickedTask.status}
                     onChangeStatus={(newStatus) => {
                         const updatedTasks = tasklist.tasks.map((task) => {
-                            if (task.id === clickedTask) {
+                            if (task.id === clickedTask.id) {
                                 return { ...task, status: newStatus };
                             }
                             return task;
@@ -136,7 +137,7 @@ export default function Tasklist({ tasklist }) {
                         <span
                             className="material-icons"
                             onClick={() => {
-                                setClickedTask(task.id);
+                                setClickedTask(task);
                                 hanleShowStatusDialog();
                             }}
                         >
