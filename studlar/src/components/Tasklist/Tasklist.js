@@ -102,12 +102,16 @@ export default function Tasklist({ tasklist }) {
                     y={lastClickedCursorPosition.y}
                     statusMap={statusList}
                     onChangeStatus={(newStatus) => {
-                        tasklist.tasks.forEach((task) => {
+                        const updatedTasks = tasklist.tasks.map((task) => {
                             if (task.id === clickedTask) {
-                                task.status = newStatus;
+                                return { ...task, status: newStatus };
                             }
+                            return task;
                         });
+
+                        tasklist.tasks = updatedTasks;
                         setClickedTask(null);
+                        setShowStatusDialog(false);
                         refreshList();
                     }}
                 />
@@ -124,8 +128,11 @@ export default function Tasklist({ tasklist }) {
                         key={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
                     >
                         <span className="material-icons">
-                            radio_button_unchecked
+                            {statusList.find(
+                                (status) => status.name === task.status
+                            )?.icon || "radio_button_unchecked"}
                         </span>
+
                         <span
                             className="material-icons"
                             onClick={() => {
