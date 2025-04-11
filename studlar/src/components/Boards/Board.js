@@ -161,7 +161,7 @@ export default function Board({
                 ) : (
                     <>
                         <p>{board.name}</p>
-                        <div>
+                        <div className={styles.headerOptionsContainer}>
                             <span
                                 className="material-icons card-header-menu"
                                 onClick={handleAdd}

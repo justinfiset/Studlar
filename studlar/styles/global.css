@@ -1,19 +1,22 @@
 body {
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background-color: #588157;
-    color: #344E41;
+    color: #344e41;
     max-width: 100vw;
     overflow: hiddenz;
+    font-size: calc(0.75em + 1vmin);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     transition: 100ms;
     box-sizing: border-box;
 }
 
 *::selection {
-    background-color: #3A5A40;
-    color: #DAD7CD;
+    background-color: #3a5a40;
+    color: #dad7cd;
 }
 
 a {
@@ -22,13 +25,13 @@ a {
 }
 
 nav {
-    background-color: #3A5A40;
-    color: #DAD7CD;
+    background-color: #3a5a40;
+    color: #dad7cd;
     display: flex;
 
     align-items: center;
     padding: 0.5em 1em 0.5em 1em;
-    font-size: 2em;
+    font-size: calc(0.75em + 1.5vmin);
     font-weight: bolder;
     border-bottom: solid 4px #304934;
 }
@@ -43,22 +46,21 @@ nav * {
 
 nav *:hover {
     cursor: pointer;
-    color: #A3B18A;
+    color: #a3b18a;
 }
 
 article {
     padding: 0 1em 1em 1em;
-    margin: 1em;
+    margin: 0.5em;
     border-radius: 0.5em;
-    background-color: #DAD7CD;
-    border-color: #3A5A40;
+    background-color: #dad7cd;
+    border-color: #3a5a40;
     border: solid 2px;
     height: fit-content;
     max-width: 100vw;
 }
 
 article p label input button {
-    font-size: 1.5em;
     font-weight: 500;
 }
 
@@ -66,26 +68,26 @@ article p label input button {
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
-    border-bottom: solid 1px #3A5A40;;
-    font-size: 1em;
+    border-bottom: solid 1px #3a5a40;
 }
 
 .card-header * {
     margin: 0 0 5px 0;
     font-weight: bolder;
-    font-size: 2em;
+    font-size: calc(0.75em + 1.5vmin);
+    flex: 1;
 }
 
 .card-header-menu {
     padding: 0.3em;
-    margin-left: 0.3em;
+    margin-left: auto;
     cursor: pointer;
     border-radius: 100%;
     height: fit-content;
 }
 
 .card-header-menu:hover {
-    background-color: #A3B18A;
+    background-color: #a3b18a;
 }
 
 button {
@@ -93,28 +95,28 @@ button {
     cursor: pointer;
     padding: 0.5em 1.2em;
     margin-top: 0.8em;
-    background-color: #3A5A40;
+    background-color: #3a5a40;
     text-align: center;
-    color: #DAD7CD;
+    color: #dad7cd;
     border: solid 2px #588157;
     border-radius: 5px;
     box-sizing: border-box;
-} 
+}
 
 button:hover {
     background-color: #588157;
-    border: solid 2px #3A5A40;
+    border: solid 2px #3a5a40;
 }
 
 .danger-button {
-    background-color: #C85250;
-    color: #DAD7CD;
-    border: solid 2px #E7625F;
+    background-color: #c85250;
+    color: #dad7cd;
+    border: solid 2px #e7625f;
 }
 
 .danger-button:hover {
-    background-color: #E7625F;
-    border: solid 2px #C85250;
+    background-color: #e7625f;
+    border: solid 2px #c85250;
 }
 
 label {
@@ -122,7 +124,8 @@ label {
     font-weight: 600;
 }
 
-input, textarea{
+input,
+textarea {
     all: unset;
     background-color: #f1f0ec;
     padding: 0.3em 0.4em;
