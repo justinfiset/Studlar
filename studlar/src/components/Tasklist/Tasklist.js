@@ -133,6 +133,7 @@ export default function Tasklist({ tasklist }) {
                             )?.icon || "radio_button_unchecked"
                         }
                         key={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
+                        id={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
                     />
                 ))}
                 <div

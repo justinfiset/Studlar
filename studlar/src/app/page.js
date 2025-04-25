@@ -46,7 +46,7 @@ export default function Home() {
     const showAddboardComponent = (id) => {
         setActiveBoardId(id);
         setAddComponentModal(true);
-    }
+    };
 
     // Dnd
     const [activeDragId, setActiveDragId] = useState(null);
@@ -60,7 +60,8 @@ export default function Home() {
             const data = await respone.json();
 
             if (respone.ok) {
-                setBoards(data);
+                const sortedData = data.sort((a, b) => a.positionY - b.positionY);
+                setBoards(sortedData);
                 console.log(data);
             } else {
                 setError("Error: " + data.error);
@@ -84,6 +85,18 @@ export default function Home() {
 
     const requestRefresh = () => {
         setReload(!reload);
+    };
+
+    const updateColYPosition = (xPosition) => {
+        setBoards((prev) => {
+            let index = 0;
+            return prev.map((b) => {
+                if(b.positionX === xPosition) {
+                    return {...b, positionY: index++};
+                }
+                return b;
+            });
+        });
     };
 
     const sensors = useSensors(
@@ -154,6 +167,9 @@ export default function Home() {
                             .concat(newBoardsCol);
                     });
                     setOverColumn(-1);
+
+                    // Update the y postiion for the column (to update the api)
+                    updateColYPosition(activeBoardCol);
                 } else {
                     const oldRow = boards.filter(
                         (board) => board.positionX === activeBoardCol
@@ -176,6 +192,10 @@ export default function Home() {
                             .concat(newRow);
                     });
                     setOverColumn(-1);
+
+                    // Update both columns
+                    updateColYPosition(activeBoardCol);
+                    updateColYPosition(overBoardCol);
                 }
 
                 refreshColumns();
@@ -193,7 +213,10 @@ export default function Home() {
                     const oldRow = boards.filter(
                         (board) => board.positionX === activeBoardCol
                     );
-                    const [removedBoard] = oldRow.splice(getBoardColPos(activeBoard.id), 1);
+                    const [removedBoard] = oldRow.splice(
+                        getBoardColPos(activeBoard.id),
+                        1
+                    );
                     removedBoard.positionX = parseInt(overCol);
                     const newRow = boards.filter(
                         (board) => board.positionX === overCol
@@ -203,11 +226,18 @@ export default function Home() {
                         return prev
                             .filter(
                                 (board) =>
-                                    board.positionX !== activeBoardCol && board.positionX !== overCol && board.id !== activeBoard.id
+                                    board.positionX !== activeBoardCol &&
+                                    board.positionX !== overCol &&
+                                    board.id !== activeBoard.id
                             )
                             .concat(oldRow)
                             .concat(newRow);
                     });
+
+                    // Update both old and new col's boards y posiiton
+                    updateColYPosition(activeBoardCol);
+                    updateColYPosition(overCol);
+
                     refreshColumns();
                 }
             }
@@ -251,7 +281,9 @@ export default function Home() {
                                         setBoards(newBoards);
                                         refreshColumns();
                                     }}
-                                    showAddboardComponent={showAddboardComponent}
+                                    showAddboardComponent={
+                                        showAddboardComponent
+                                    }
                                 ></BoardColumn>
                             ))}
                             <DragOverlay
