@@ -17,12 +17,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import Tasklist from "../Tasklist/Tasklist";
 const maxXPosition = 3;
 
-export default function Board({
-    board,
-    onDelete,
-    onUpdate,
-    showAddboardComponent,
-}) {
+export default function Board(props) {
     const {
         attributes,
         listeners,
@@ -30,7 +25,7 @@ export default function Board({
         transform,
         transition,
         isDragging,
-    } = useSortable({ id: `board-${board.id}` });
+    } = useSortable({ id: `board-${props.board.id}` });
 
     // Move the board when draggedf
     const style = {
@@ -43,16 +38,16 @@ export default function Board({
     const { user } = useUser();
 
     // Editing
-    const [boardName, setBoardName] = useState(board.name);
+    const [boardName, setBoardName] = useState(props.board.name);
 
     const delCurrentBoard = async () => {
         // In the hope everything goes right, we remove the board from the list
-        onDelete(board.id);
+        props.onDelete(props.board.id);
 
         // TODO KEEP IN HERE?
         try {
             const response = await fetch(
-                `/api/boards/?id=${board.id}&owner_id=${user.id}`,
+                `/api/boards/?id=${props.board.id}&owner_id=${user.id}`,
                 { method: "DELETE" }
             );
             const data = await response.json();
@@ -74,7 +69,7 @@ export default function Board({
         setIsEditing(!isEditing);
 
         if (isEditing) {
-            board.name = boardName;
+            props.board.name = boardName;
             updateBoard();
         }
     };
@@ -83,9 +78,15 @@ export default function Board({
         event.stopPropagation();
         event.preventDefault();
 
+        props.deleteModalCallback(() => handleDeleteCallback)
+        props.showDeleteModal();
+    };
+
+    const handleDeleteCallback = () => {
+        console.trace("Deleting board...");
         setShowOptions(false);
         delCurrentBoard();
-    };
+    }
 
     const updateBoard = async () => {
         try {
@@ -94,12 +95,12 @@ export default function Board({
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(board),
+                body: JSON.stringify(props.board),
             });
 
             const data = await response.json();
             if (response.ok) {
-                onUpdate();
+                props.onUpdate();
             } else {
                 console.error("Error:", data.error);
             }
@@ -110,19 +111,19 @@ export default function Board({
 
     const moveCard = (shift) => {
         setShowOptions(false);
-        const newXPosition = board.positionX + shift;
+        const newXPosition = props.board.positionX + shift;
         if (newXPosition >= 0 && newXPosition <= maxXPosition) {
-            board.positionX = newXPosition;
+            props.board.positionX = newXPosition;
             updateBoard();
         }
     };
 
     const handleAdd = (event) => {
-        showAddboardComponent(board.id);
+        props.showAddboardComponent(props.board.id);
     };
 
     const displayTasklist = (board) => {
-        return board.task_lists.map((tasklist) => (
+        return props.board.task_lists.map((tasklist) => (
             <Tasklist tasklist={tasklist} key={`tasklist-${tasklist.id}`} />
         ));
     };
@@ -160,7 +161,7 @@ export default function Board({
                     </>
                 ) : (
                     <>
-                        <p>{board.name}</p>
+                        <p>{props.board.name}</p>
                         <div className={styles.headerOptionsContainer}>
                             <span
                                 className="material-icons card-header-menu"
@@ -182,13 +183,13 @@ export default function Board({
             {!showOptions ? (
                 <>
                     <p>
-                        {board.positionX} {board.positionY} {board.description}
+                        {props.board.positionX} {props.board.positionY} {props.board.description}
                     </p>
-                    {displayTasklist(board)}
+                    {displayTasklist(props.board)}
                 </>
             ) : (
                 <div className={styles.options}>
-                    {board.positionX > 0 && (
+                    {props.board.positionX > 0 && (
                         <div
                             className={styles.positionArrow}
                             onClick={moveCard.bind(this, -1)}
@@ -207,7 +208,7 @@ export default function Board({
                             delete
                         </p>
                     </div>
-                    {board.positionX < maxXPosition && (
+                    {props.board.positionX < maxXPosition && (
                         <div
                             className={styles.positionArrow}
                             onClick={moveCard.bind(this, 1)}

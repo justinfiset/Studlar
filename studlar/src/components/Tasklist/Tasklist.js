@@ -81,7 +81,8 @@ export default function Tasklist({ tasklist }) {
                 }),
             });
 
-            const data = response.json();
+            const data = await response.json();
+            console.log(data);
             if (response.ok) {
                 tasklist.tasks.push(data);
             } else {
@@ -124,6 +125,11 @@ export default function Tasklist({ tasklist }) {
                         <p>{tasklist.name}</p>
                     </div>
                 )}
+                {tasklist.description && (
+                    <div className={boardStyles.subsectionDescription}>
+                        <p>{tasklist.description}</p>
+                    </div>
+                )}
                 {tasklist.tasks.map((task) => (
                     <Task
                         task={task}
@@ -134,6 +140,8 @@ export default function Tasklist({ tasklist }) {
                         }
                         key={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
                         id={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
+                        setClickedTask={setClickedTask}
+                        hanleShowStatusDialog={hanleShowStatusDialog}
                     />
                 ))}
                 <div

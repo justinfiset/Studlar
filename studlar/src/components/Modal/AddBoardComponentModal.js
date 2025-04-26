@@ -19,10 +19,6 @@ export default function AddBoardComponentModal(props) {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
 
-    const handleSubmit = async (event) => {
-
-    };
-
     const handleCreation = async (event) => {
         event.preventDefault();
 
@@ -45,7 +41,7 @@ export default function AddBoardComponentModal(props) {
                 }),
             });
 
-            const data = await data.json();
+            const data = await response.json();
             if(response.ok) {
                 props.onClose();
             }
@@ -56,6 +52,7 @@ export default function AddBoardComponentModal(props) {
 
     return (
         <Modal
+            show={true}
             title={type ? `Add a ${type}` : "Add to board"}
             onClose={props.onClose}
         >

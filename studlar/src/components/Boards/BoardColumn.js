@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useDroppable } from "@dnd-kit/core";
 import styles from "./board.module.css";
@@ -35,25 +35,29 @@ export default function BoardColumn(props) {
         <div
             ref={setNodeRef}
             {...attributes}
-            className={`${styles.contentCol} ${(isOver || isOverColumn) ? styles.isOver : ""}`}
+            className={`${styles.contentCol} ${
+                isOver || isOverColumn ? styles.isOver : ""
+            }`}
             style={style}
         >
             <SortableContext
                 items={props.boards.map((board) => `board-${board.id}`)}
                 strategy={verticalListSortingStrategy}
             >
-                {props.boards
-                    .map((board) => {
-                        return (
-                            <Board
-                                key={board.id}
-                                board={board}
-                                onDelete={props.onDelete}
-                                onUpdate={props.onUpdate}
-                                showAddboardComponent={props.showAddboardComponent}
-                            />
-                        );
-                    })}
+                {props.boards.map((board) => {
+                    return (
+                        <Board
+                            key={board.id}
+                            board={board}
+                            onDelete={props.onDelete}
+                            onUpdate={props.onUpdate}
+                            showAddboardComponent={props.showAddboardComponent}
+                            
+                            showDeleteModal={props.showDeleteModal}
+                            deleteModalCallback={props.deleteModalCallback}
+                        />
+                    );
+                })}
             </SortableContext>
         </div>
     );

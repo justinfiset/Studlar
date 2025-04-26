@@ -6,6 +6,8 @@ import CreateBoardModel from "@/components/Modal/CreateBoardModal";
 import { useUser } from "@/contexts/UserContext";
 import Board from "@/components/Boards/Board";
 import Link from "next/link";
+import DeleteConfirmationModal from "@/components/Modal/DeleteConfirmationModal";
+
 import {
     DndContext,
     closestCorners,
@@ -29,6 +31,19 @@ export default function Home() {
         "col-4",
     ]);
 
+    const [pendingUpdates, setPendingUpdates] = useState(new Set());
+    useEffect(() => {
+        if (pendingUpdates.size > 0) {
+            // Wait 2s without any changes before sending the data
+            // This is to prevent multiple sending of the same or similar data
+            const timer = setTimeout(() => {
+                flushPendingUpdates();
+            }, 2000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [pendingUpdates]);
+
     const { user } = useUser();
     const [error, setError] = useState("");
     const [reload, setReload] = useState(false);
@@ -38,6 +53,11 @@ export default function Home() {
     const refreshColumns = () => {
         setForceRefresh((prev) => prev + 1);
     };
+
+    // Modals
+    const [deleteConfirmModalShow, setDeleteConfirmModalShow] = useState(false);
+    const [deleteConfirmationCallback, setDeleteConfirmationCallback] =
+        useState(null);
 
     const [activeBoardId, setActiveBoardId] = useState(null);
     const [createModal, setCreateModal] = useState(false);
@@ -55,12 +75,14 @@ export default function Home() {
     const getUserBoards = async () => {
         try {
             const respone = await fetch(
-                `http://localhost:8000/api/users/${user.id}/boards/`
+                `/api/boards/dashboard?owner_id=${user.id}`,
             );
             const data = await respone.json();
 
             if (respone.ok) {
-                const sortedData = data.sort((a, b) => a.positionY - b.positionY);
+                const sortedData = data.sort(
+                    (a, b) => a.positionY - b.positionY
+                );
                 setBoards(sortedData);
                 console.log(data);
             } else {
@@ -89,13 +111,19 @@ export default function Home() {
 
     const updateColYPosition = (xPosition) => {
         setBoards((prev) => {
-            let index = 0;
-            return prev.map((b) => {
-                if(b.positionX === xPosition) {
-                    return {...b, positionY: index++};
-                }
-                return b;
-            });
+            const col = prev.filter(
+                (board) => board.positionX === xPosition
+            );
+
+            const updatedCol = col.map((board, index) => ({
+                ...board, 
+                positionY: index
+            }));
+
+            return [
+                ...prev.filter((board) => board.positionX !== xPosition),
+                ...updatedCol
+            ]
         });
     };
 
@@ -115,6 +143,8 @@ export default function Home() {
 
     const handleDragMove = (event) => {
         const { active, over } = event;
+        if (!over) return; // If and only if, we have an over element
+
         const overBoard = getBoard(over.id);
         setOverColumn(overBoard ? overBoard.positionX : -1);
     };
@@ -132,6 +162,41 @@ export default function Home() {
 
     const getBoard = (boardId) =>
         boards.find((board) => board.id == boardId.split("-")[1]);
+
+    const flushPendingUpdates = async () => {
+        for (const id of pendingUpdates) {
+            const board = boards.find((b) => b.id === id);
+            console.log("Updating board: ", board);
+            if (board) {
+                try {
+                    const response = await fetch("/api/boards/", {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(board),
+                    });
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        // Nothing for the moment
+                        // TODO:
+                        // Would be great to add a sucess icon somewhere and a sync / clour logo
+                    } else {
+                        console.error("Error:", data);
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+            }
+        }
+
+        setPendingUpdates(new Set());
+    };
+
+    const addPendingUpdate = (boardId) => {
+        setPendingUpdates((prev) => new Set(prev).add(boardId));
+    };
 
     const handleDragEnd = async (event) => {
         const { active, over } = event;
@@ -198,6 +263,9 @@ export default function Home() {
                     updateColYPosition(overBoardCol);
                 }
 
+                addPendingUpdate(activeBoard.id);
+                addPendingUpdate(overBoard.id);
+
                 refreshColumns();
             }
 
@@ -217,11 +285,18 @@ export default function Home() {
                         getBoardColPos(activeBoard.id),
                         1
                     );
+
+                    // Getting the last y postion of the new column and adding 1 to it
+                    const oldNewCol = boards.filter(b => b.positionX == overCol);
+                    console.log(oldNewCol);
+                    removedBoard.positionY = oldNewCol.length > 0 ? oldNewCol[oldNewCol.length - 1].positionY + 1 : 0;
+
                     removedBoard.positionX = parseInt(overCol);
+
                     const newRow = boards.filter(
                         (board) => board.positionX === overCol
                     );
-                    newRow.push(removedBoard);
+                    newRow.splice(0, 0, removedBoard);
                     setBoards((prev) => {
                         return prev
                             .filter(
@@ -240,6 +315,8 @@ export default function Home() {
 
                     refreshColumns();
                 }
+
+                addPendingUpdate(activeBoard.id);
             }
         }
     };
@@ -251,6 +328,18 @@ export default function Home() {
                     <p>Please log in to access your dashboard.</p>
                     <Link href="/login">Click here to login</Link>
                 </div>
+            )}
+
+            {deleteConfirmModalShow && (
+                <DeleteConfirmationModal
+                    onClose={() => setDeleteConfirmModalShow(false)}
+                    onConfirm={() => {
+                        if (deleteConfirmationCallback) {
+                            deleteConfirmationCallback();
+                        }
+                        setDeleteConfirmModalShow(false);
+                    }}
+                />
             )}
 
             <section className={styles.contentHolder}>
@@ -284,7 +373,14 @@ export default function Home() {
                                     showAddboardComponent={
                                         showAddboardComponent
                                     }
-                                ></BoardColumn>
+                                    // Delete modal
+                                    showDeleteModal={() => {
+                                        setDeleteConfirmModalShow(true);
+                                    }}
+                                    deleteModalCallback={
+                                        setDeleteConfirmationCallback
+                                    }
+                                />
                             ))}
                             <DragOverlay
                                 style={{

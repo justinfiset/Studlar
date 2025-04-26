@@ -1,19 +1,36 @@
 import { useUser } from "@/contexts/UserContext";
 import styles from "./modal.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Modal(props) {
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if(event.key === "Escape") {
+                props.onClose();
+            }   
+        }
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        }
+    }, [props.onClose]);
+
+    if(!props.show) {
+        return null;
+    }
+
     return (
         <div className={styles.modalBackground}>
-            <article className={styles.modalContainer}>
-                <div className={styles.cardHeader}>
-                    <p>{props.title}</p>
-                    <span className={`material-icons ${styles.cardHeaderClose}`} onClick={props.onClose}>
-                        close
-                    </span>
-                </div>
-                {props.children}
-            </article>
-        </div>
+        <article className={styles.modalContainer}>
+            <div className={styles.cardHeader}>
+                <p>{props.title}</p>
+                <span className={`material-icons ${styles.cardHeaderClose}`} onClick={props.onClose}>
+                    close
+                </span>
+            </div>
+            {props.children}
+        </article>
+    </div>
     );
 }

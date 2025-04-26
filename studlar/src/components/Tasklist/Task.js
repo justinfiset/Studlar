@@ -3,7 +3,7 @@ import boardStyles from "@/components/Boards/board.module.css";
 
 import { useSortable } from "@dnd-kit/sortable";
 
-export default function Task({ task, icon, id }) {
+export default function Task({ task, icon, id, setClickedTask, hanleShowStatusDialog}) {
     const { attributes, listeners, setNoderef, transform } = useSortable({
         id: id
     });

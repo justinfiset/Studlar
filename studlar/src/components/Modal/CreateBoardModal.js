@@ -51,6 +51,7 @@ export default function CreateBoardModel(props) {
 
     return (
         <Modal 
+            show={true}
             title="Create a new board"
             onClose={props.onClose}
         >
@@ -62,6 +63,7 @@ export default function CreateBoardModel(props) {
                     id="boardname"
                     placeholder="Your board name"
                     required
+                    autoFocus
                 />
                 <label><strong>Description</strong> (optional) : </label>
                 <textarea
