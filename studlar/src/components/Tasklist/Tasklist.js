@@ -95,6 +95,41 @@ export default function Tasklist({ tasklist }) {
         }
     };
 
+    const handleStatusChange = (newStatus) => {
+        const updatedTasks = tasklist.tasks.map((task) => {
+            if (task.id === clickedTask.id) {
+                return { ...task, status: newStatus };
+            }
+            return task;
+        });
+
+        tasklist.tasks = updatedTasks;
+
+        sendStatusChange(clickedTask.id, newStatus);
+
+        setClickedTask(null);
+        setShowStatusDialog(false);
+        refreshList();
+    };
+
+    const sendStatusChange = async (taskId, newStatus) => {
+        const response = await fetch("/api/boards/tasks/", {
+            method: "PUT",
+            body: JSON.stringify({
+                id: taskId,
+                status: newStatus,
+            }),
+        });
+
+        const data = await response.json();
+        console.log(data);
+        if (response.ok) {
+            // We do nothing as the tasklist is already updated (anticipated response)
+        } else {
+            console.error("Error:", data.error);
+        }
+    }
+
     return (
         <>
             {showStatusDialog && (
@@ -104,19 +139,7 @@ export default function Tasklist({ tasklist }) {
                     y={lastClickedCursorPosition.y}
                     statusMap={statusList}
                     currentStatus={clickedTask.status}
-                    onChangeStatus={(newStatus) => {
-                        const updatedTasks = tasklist.tasks.map((task) => {
-                            if (task.id === clickedTask.id) {
-                                return { ...task, status: newStatus };
-                            }
-                            return task;
-                        });
-
-                        tasklist.tasks = updatedTasks;
-                        setClickedTask(null);
-                        setShowStatusDialog(false);
-                        refreshList();
-                    }}
+                    onChangeStatus={handleStatusChange}
                 />
             )}
             <div>

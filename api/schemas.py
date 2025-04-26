@@ -10,6 +10,17 @@ class TaskCreate(BaseModel):
     status: str
     list_id: int
 
+class TaskUpdate(BaseModel):
+    id: int
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+    list_id: Optional[int] = None
+
+    class Config:
+        orm_mode = True
+
+
 class TaskResponse(BaseModel):
     id: int
     title: str

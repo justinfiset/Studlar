@@ -78,6 +78,19 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):
     db.refresh(db_task)
     return db_task
 
+@router.put("/api/tasks/", response_model=TaskResponse)
+def update_task(task: TaskUpdate, db: Session = Depends(get_db)):
+    db_task = db.query(Task).filter(Task.id == task.id).first()
+    if(not db_task):
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    for key, value in task.dict(exclude_unset=True).items():
+        setattr(db_task, key, value)
+
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
 # TASKLIKST ROUTES
 @router.get("/api/tasklists/", response_model=list[TaskListResponse])
 def get_tasklists(tasklist: TaskListGet = Depends(), db : Session = Depends(get_db)):
