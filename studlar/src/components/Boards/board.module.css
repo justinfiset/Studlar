@@ -152,3 +152,9 @@
 .activeCard {
     opacity: 50%;
 }
+
+@media (max-width: 600px) {
+    .positionArrow {
+        display: none;
+    }
+}

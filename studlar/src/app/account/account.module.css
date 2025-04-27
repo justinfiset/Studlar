@@ -1,0 +1,21 @@
+.contentHolder {
+    display: flex;
+    flex-direction: column;
+}
+
+.editForm {
+    margin-top: 0.5em
+}
+
+.buttonSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+@media (min-width: 1200px) {
+    .contentHolder {
+        flex-direction: row;
+    }
+}

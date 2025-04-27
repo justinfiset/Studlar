@@ -27,6 +27,8 @@ class TaskResponse(BaseModel):
     description: str
     status: str
     list_id: int
+    created_at: str
+    updated_at: str
 
 # Tasklist
 class TaskListGet(BaseModel):
@@ -92,6 +94,16 @@ class BoardResponse(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+
+class UserUpdate(BaseModel):
+    id: int
+    email: Optional[str] = None
+    firstname: Optional[str] = None
+    lastname: Optional[str] = None
+    password: Optional[str] = None
+
+    class Config:
+        orm_mode = True
 
 class UserCreate(BaseModel):
     email: str

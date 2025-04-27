@@ -113,7 +113,15 @@ export default function Board(props) {
         setShowOptions(false);
         const newXPosition = props.board.positionX + shift;
         if (newXPosition >= 0 && newXPosition <= maxXPosition) {
-            props.board.positionX = newXPosition;
+            props.boardsHook((prev) => {
+                return prev.map((board) => {
+                    if (board.id === props.board.id) {
+                        board.positionX = newXPosition;
+                    }
+                    return board;
+                });
+            })
+
             updateBoard();
         }
     };
@@ -182,9 +190,10 @@ export default function Board(props) {
 
             {!showOptions ? (
                 <>
-                    <p>
+                    {/* <p>
                         {props.board.positionX} {props.board.positionY} {props.board.description}
-                    </p>
+                    </p> */}
+                    <p>{props.board.description}</p>
                     {displayTasklist(props.board)}
                 </>
             ) : (

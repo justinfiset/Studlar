@@ -3,11 +3,16 @@ import styles from "./modal.module.css";
 import { useEffect, useState } from "react";
 
 export default function Modal(props) {
+    const style = {
+        opacity: 0,
+        Animation: "fadeIn 0.5s forwards",
+    }
+
     useEffect(() => {
         const handleKeyDown = (event) => {
             if(event.key === "Escape") {
                 props.onClose();
-            }   
+            }
         }
         document.addEventListener("keydown", handleKeyDown);
 

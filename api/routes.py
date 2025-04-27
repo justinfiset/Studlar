@@ -17,6 +17,19 @@ def get_db():
     finally:
         db.close()
 
+@router.put("/api/users/", response_model=UserResponse)
+def update_user(user: UserUpdate, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.id == user.id).first()
+    if(not db_user):
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    for key, value in user.dict(exclude_unset=True).items():
+        setattr(db_user, key, value)
+
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
 # GET ALL BOARDS AND CONTENT
 @router.get("/api/users/{user_id}/boards/")
 def get_user_boards(user_id: int, db: Session = Depends(get_db)):
@@ -46,7 +59,9 @@ def get_user_boards(user_id: int, db: Session = Depends(get_db)):
                             "id": task.id,
                             "title": task.title,
                             "description": task.description,
-                            "status": task.status
+                            "status": task.status,
+                            "created_at": task.created_at,
+                            "updated_at": task.updated_at
                         }
                         for task in task_list.tasks
                     ]

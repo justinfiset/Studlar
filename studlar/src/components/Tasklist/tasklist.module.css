@@ -83,3 +83,7 @@
 .taskStatusItem:nth-last-child {
     margin-right: 10px;
 }
+
+.taskName:hover {
+    text-decoration: underline;
+}

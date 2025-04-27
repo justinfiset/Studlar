@@ -15,7 +15,7 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
-    boards = relationship("Board", back_populates="owner")
+    boards = relationship("Board", back_populates="owner", cascade="all, delete-orphan")
 
 class Board(Base):
     __tablename__ = "Board"
@@ -27,13 +27,13 @@ class Board(Base):
     positionY = Column(Integer)
     sizeX = Column(Integer)
     sizeY = Column(Integer)
-    owner_id = Column(Integer, ForeignKey("User.id"), index=True)
+    owner_id = Column(Integer, ForeignKey("User.id", ondelete="CASCADE"), index=True) 
 
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     owner = relationship("User", back_populates="boards")
-    task_lists = relationship("TaskList", back_populates="board")
+    task_lists = relationship("TaskList", back_populates="board", cascade="all, delete-orphan")
 
 class TaskList(Base):
     __tablename__ = "TaskList"
@@ -41,13 +41,13 @@ class TaskList(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     description = Column(Text)
-    board_id = Column(Integer, ForeignKey("Board.id"), index=True)
+    board_id = Column(Integer, ForeignKey("Board.id", ondelete="CASCADE"), index=True)
 
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     board = relationship("Board", back_populates="task_lists")
-    tasks = relationship("Task", back_populates="task_list")
+    tasks = relationship("Task", back_populates="task_list", cascade="all, delete-orphan")
 
 class Task(Base):
     __tablename__ = "Task"
@@ -56,7 +56,7 @@ class Task(Base):
     title = Column(String)
     description = Column(Text)
     status = Column(String)
-    list_id = Column(Integer, ForeignKey("TaskList.id"), index=True)
+    list_id = Column(Integer, ForeignKey("TaskList.id", ondelete="CASCADE"), index=True)
 
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))

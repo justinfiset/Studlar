@@ -55,6 +55,7 @@ export default function BoardColumn(props) {
                             
                             showDeleteModal={props.showDeleteModal}
                             deleteModalCallback={props.deleteModalCallback}
+                            boardsHook={props.boardsHook}
                         />
                     );
                 })}

@@ -14,23 +14,15 @@ import {
     PointerSensor,
     useSensor,
     useSensors,
-    useDroppable,
     DragOverlay,
 } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
-import { arrayMove, SortableContext, useSortable } from "@dnd-kit/sortable";
+import { arrayMove } from "@dnd-kit/sortable";
 import BoardColumn from "@/components/Boards/BoardColumn";
 import { ClientOnly } from "@/components/ClientOnly";
 import AddBoardComponentModal from "@/components/Modal/AddBoardComponentModal";
 
 export default function Home() {
-    const [columns, setColumns] = useState([
-        "col-1",
-        "col-2",
-        "col-3",
-        "col-4",
-    ]);
-
     const [pendingUpdates, setPendingUpdates] = useState(new Set());
     useEffect(() => {
         if (pendingUpdates.size > 0) {
@@ -75,7 +67,7 @@ export default function Home() {
     const getUserBoards = async () => {
         try {
             const respone = await fetch(
-                `/api/boards/dashboard?owner_id=${user.id}`,
+                `/api/boards/dashboard?owner_id=${user.id}`
             );
             const data = await respone.json();
 
@@ -111,19 +103,17 @@ export default function Home() {
 
     const updateColYPosition = (xPosition) => {
         setBoards((prev) => {
-            const col = prev.filter(
-                (board) => board.positionX === xPosition
-            );
+            const col = prev.filter((board) => board.positionX === xPosition);
 
             const updatedCol = col.map((board, index) => ({
-                ...board, 
-                positionY: index
+                ...board,
+                positionY: index,
             }));
 
             return [
                 ...prev.filter((board) => board.positionX !== xPosition),
-                ...updatedCol
-            ]
+                ...updatedCol,
+            ];
         });
     };
 
@@ -287,9 +277,14 @@ export default function Home() {
                     );
 
                     // Getting the last y postion of the new column and adding 1 to it
-                    const oldNewCol = boards.filter(b => b.positionX == overCol);
+                    const oldNewCol = boards.filter(
+                        (b) => b.positionX == overCol
+                    );
                     console.log(oldNewCol);
-                    removedBoard.positionY = oldNewCol.length > 0 ? oldNewCol[oldNewCol.length - 1].positionY + 1 : 0;
+                    removedBoard.positionY =
+                        oldNewCol.length > 0
+                            ? oldNewCol[oldNewCol.length - 1].positionY + 1
+                            : 0;
 
                     removedBoard.positionX = parseInt(overCol);
 
@@ -362,7 +357,9 @@ export default function Home() {
                                     column={index}
                                     key={`col-${index}-${forceRefresh}`}
                                     overColumn={overColumn}
-                                    onUpdate={requestRefresh}
+                                    onUpdate={() => {
+                                        //requestRefresh();
+                                    }}
                                     onDelete={async (id) => {
                                         const newBoards = boards.filter(
                                             (board) => board.id !== id
@@ -380,6 +377,7 @@ export default function Home() {
                                     deleteModalCallback={
                                         setDeleteConfirmationCallback
                                     }
+                                    boardsHook={setBoards}
                                 />
                             ))}
                             <DragOverlay
@@ -420,7 +418,10 @@ export default function Home() {
             {addComponentModal && (
                 <AddBoardComponentModal
                     id={activeBoardId}
-                    onClose={() => setAddComponentModal(false)}
+                    onClose={() => {
+                        setAddComponentModal(false);
+                        requestRefresh();
+                    }}
                 />
             )}
         </>
