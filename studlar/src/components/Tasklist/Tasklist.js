@@ -18,6 +18,7 @@ export default function Tasklist({ tasklist }) {
     const [showStatusDialog, setShowStatusDialog] = useState(false);
     const [clickedTask, setClickedTask] = useState(null);
     const statusDialog = useRef(null);
+
     const [cursorPosition, setCursorPosition] = useState({
         x: 0,
         y: 0,
@@ -26,6 +27,8 @@ export default function Tasklist({ tasklist }) {
         x: 0,
         y: 0,
     });
+    const [touchPosition, setTouchPosition] = useState({ x: 0, y: 0 });
+    const [lastTouchPosition, setLastTouchPosition] = useState({ x: 0, y: 0 });
 
     const [forceRefresh, setForceRefresh] = useState(0);
     const refreshList = () => {
@@ -33,28 +36,28 @@ export default function Tasklist({ tasklist }) {
     };
 
     useEffect(() => {
-        const updateCursorPosition = (event) => {
-            setCursorPosition({
-                x: event.clientX,
-                y: event.clientY,
-            });
-        };
-        window.addEventListener("mousemove", updateCursorPosition);
+        const handleClickOutside = (event) => {
+            if (showStatusDialog && statusDialog.current) {
+                const isTouch = event.type.includes("touch");
+                const target = isTouch
+                    ? document.elementFromPoint(
+                          event.touches[0].clientX,
+                          event.touches[0].clientY
+                      )
+                    : event.target;
 
-        const handleMouseDown = (event) => {
-            if (
-                showStatusDialog &&
-                statusDialog.current &&
-                !statusDialog.current.contains(event.target)
-            ) {
-                setShowStatusDialog(false);
+                if (!statusDialog.current.contains(target)) {
+                    setShowStatusDialog(false);
+                }
             }
         };
-        document.addEventListener("mousedown", handleMouseDown);
+
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("touchstart", handleClickOutside);
 
         return () => {
-            window.removeEventListener("mousemove", updateCursorPosition);
-            document.removeEventListener("mousedown", handleMouseDown);
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("touchstart", handleClickOutside);
         };
     }, [showStatusDialog]);
 
@@ -62,8 +65,38 @@ export default function Tasklist({ tasklist }) {
         setNewTaskName("");
     }, [addingTask]);
 
-    const hanleShowStatusDialog = (event) => {
-        setLastClickedCursorPosition(cursorPosition);
+    const handleShowStatusDialog = (event, task) => {
+        console.log("Event received:", event);
+        console.log("Task:", task);
+        // Sauvegarder la tâche cliquée
+        setClickedTask(task);
+
+        // Empêcher le comportement par défaut si l'événement existe
+        event?.preventDefault?.();
+
+        // Déterminer les coordonnées
+        let clientX, clientY;
+
+        // Gérer les événements tactiles
+        if (event?.touches) {
+            const touch = event.touches[0] || event.changedTouches?.[0];
+            if (touch) {
+                clientX = touch.clientX;
+                clientY = touch.clientY;
+            }
+        }
+        // Gérer les événements souris
+        else if (event) {
+            clientX = event.clientX;
+            clientY = event.clientY;
+        }
+        // Fallback si pas d'événement
+        else {
+            clientX = 0;
+            clientY = 0;
+        }
+
+        setLastClickedCursorPosition({ x: clientX, y: clientY });
         setShowStatusDialog(true);
     };
 
@@ -86,7 +119,7 @@ export default function Tasklist({ tasklist }) {
             if (response.ok) {
                 tasklist.tasks.push(data);
             } else {
-                console.error("Error:", data.error);
+                console.error("Error updating task");
             }
 
             setAddingTask(false);
@@ -128,11 +161,11 @@ export default function Tasklist({ tasklist }) {
         } else {
             console.error("Error:", data.error);
         }
-    }
+    };
 
     return (
         <>
-            {showStatusDialog && (
+            {showStatusDialog && clickedTask && (
                 <TaskStatusSelector
                     ref={statusDialog}
                     x={lastClickedCursorPosition.x}
@@ -164,7 +197,7 @@ export default function Tasklist({ tasklist }) {
                         key={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
                         id={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
                         setClickedTask={setClickedTask}
-                        hanleShowStatusDialog={hanleShowStatusDialog}
+                        hanleShowStatusDialog={handleShowStatusDialog}
                     />
                 ))}
                 <div

@@ -27,9 +27,10 @@ export default function Task({
 
             <span
                 className="material-icons"
-                onClick={() => {
+                onClick={(e) => {
+                    e.preventDefault();
                     setClickedTask(task);
-                    hanleShowStatusDialog();
+                    hanleShowStatusDialog(e, task);
                 }}
             >
                 arrow_drop_down

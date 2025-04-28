@@ -76,12 +76,11 @@ article p label input button {
 
 .card-header * {
     padding: 0;
-    margin: 0;
+    margin: 0 0 5px 0;
     font-weight: bolder;
     font-size: calc(0.75em + 1.5vmin);
-    flex: 1;
     height: fit-content;
-    width: auto;
+    width: 100%;
 }
 
 .no-overflow {
@@ -135,6 +134,13 @@ button:hover {
 .danger-button:hover {
     background-color: #e7625f;
     border: solid 2px #c85250;
+}
+
+.button-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 label {

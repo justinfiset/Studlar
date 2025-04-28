@@ -38,7 +38,7 @@ export default function AccountPage(props) {
         });
 
         // Send data to the api
-        fetch("/api/users", {
+        const response = fetch("/api/users", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -49,18 +49,13 @@ export default function AccountPage(props) {
                 lastname: tempUserSettings.lastname,
                 email: tempUserSettings.email,
             }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.success) {
-                    console.log("User settings updated successfully.");
-                } else {
-                    console.error("Error updating user settings:", data);
-                }
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-            });
+        });
+
+        if (response.ok) {
+            console.log("User settings updated successfully.");
+        } else {
+            console.error("Error updating user settings:");
+        }
     };
 
     return (
@@ -146,7 +141,7 @@ export default function AccountPage(props) {
                                     </form>
                                 )}
                             </div>
-                            <div className={styles.buttonSection}>
+                            <div className="button-section">
                                 {isediting ? (
                                     <button
                                         onClick={() => {

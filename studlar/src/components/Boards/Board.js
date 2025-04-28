@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./board.module.css";
 import { useUser } from "@/contexts/UserContext";
 import { CSS } from "@dnd-kit/utilities";
@@ -22,6 +22,11 @@ export default function Board(props) {
         isDragging,
     } = useSortable({ id: `board-${props.board.id}` });
 
+    const [tempBoard, setTempBoard] = useState(props.board);
+    useEffect(() => {
+        setTempBoard(props.board);
+    }, [props.board]);
+
     const { openModal, closeModal } = useModal();
 
     // Move the board when draggedf
@@ -33,9 +38,6 @@ export default function Board(props) {
     const [showOptions, setShowOptions] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const { user } = useUser();
-
-    // Editing
-    const [boardName, setBoardName] = useState(props.board.name);
 
     const delCurrentBoard = async () => {
         // In the hope everything goes right, we remove the board from the list
@@ -63,12 +65,12 @@ export default function Board(props) {
         event.preventDefault();
 
         setShowOptions(false);
-        setIsEditing(!isEditing);
 
         if (isEditing) {
-            props.board.name = boardName;
             updateBoard();
         }
+
+        setIsEditing(!isEditing);
     };
 
     const handleDelete = (event) => {
@@ -88,13 +90,27 @@ export default function Board(props) {
     };
 
     const updateBoard = async () => {
+        props.boardsHook((prev) => {
+            return prev.map((b) => {
+                if (b.id === props.board.id) {
+                    return {
+                        ...b,
+                        name: tempBoard.name,
+                        description: tempBoard.description,
+                        positionX: tempBoard.positionX,
+                    };
+                }
+                return b;
+            });
+        });
+
         try {
             const response = await fetch("/api/boards/", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(props.board),
+                body: JSON.stringify(tempBoard), // Envoyez tempBoard au lieu de props.board
             });
 
             const data = await response.json();
@@ -128,7 +144,7 @@ export default function Board(props) {
     const handleAdd = (event) => {
         event.stopPropagation();
         event.preventDefault();
-        
+
         openModal(AddBoardComponentModal, {
             id: props.board.id,
             onConfirm: () => {
@@ -138,7 +154,7 @@ export default function Board(props) {
             onClose: () => {
                 setAddComponentModal(false);
                 props.requestRefresh();
-            }
+            },
         });
     };
 
@@ -163,6 +179,22 @@ export default function Board(props) {
             {...attributes}
         >
             <div className={styles.draggableHeader} {...listeners}></div>
+            {isEditing && (
+                <div className="button-section">
+                    <button onClick={handleEdit}>
+                        Save
+                    </button>
+                    <button
+                        className="danger-button"
+                        onClick={() => {
+                            setIsEditing(false);
+                            setTempBoard(props.board);
+                        }}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            )}
             <div className="card-header">
                 {isEditing ? (
                     <>
@@ -171,13 +203,16 @@ export default function Board(props) {
                             placeholder="Board Name"
                             className={styles.editInput}
                             id="boardName"
-                            value={boardName}
-                            onChange={(e) => setBoardName(e.target.value)}
+                            defaultValue={props.board.name}
+                            onChange={(event) => {
+                                setTempBoard((prev) => {
+                                    return {
+                                        ...prev,
+                                        name: event.target.value,
+                                    };
+                                });
+                            }}
                         />
-
-                        <button className={styles.saveBtn} onClick={handleEdit}>
-                            Save
-                        </button>
                     </>
                 ) : (
                     <>
@@ -212,11 +247,15 @@ export default function Board(props) {
                             color="40"
                             type="text"
                             name="description"
+                            defaultValue={tempBoard.description}
                             id="description"
-                            value={props.board.description}
                             onChange={(event) => {
-                                props.board.description = event.target.value;
-                                setDescription(event.target.value);
+                                setTempBoard((prev) => {
+                                    return {
+                                        ...prev,
+                                        description: event.target.value,
+                                    };
+                                });
                             }}
                             placeholder="Your board description..."
                         />

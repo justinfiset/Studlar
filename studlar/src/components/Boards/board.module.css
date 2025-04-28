@@ -128,12 +128,6 @@
     cursor: pointer;
 }
 
-.saveBtn {
-    flex: 0;
-    padding: 0 10px 0 10px;
-    margin-left: auto;
-}
-
 .editInput {
     padding: 0 0 0 0.5em;
     margin-right: 0.5em;;
