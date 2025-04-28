@@ -44,13 +44,13 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 25%));
     width: 100%;
-    gap: 0;
-    padding: 1.5em;
-    height: 100vh;
+    padding: 1rem;
+    height: auto;
 }
 
 .contentHolder > * {
     margin: 0;
+    margin-left: auto;
     width: 100%;
     height: auto;
     max-width: 100%;
@@ -80,4 +80,11 @@
     font-size: 3em;
     font-weight: bolder;
     margin-bottom: 0.5em;
+}
+
+@media (max-width: 600px) {
+    .contentHolder {
+        grid-template-columns: 1fr;
+        margin: 0 auto;
+    }
 }
