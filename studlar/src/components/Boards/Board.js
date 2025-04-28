@@ -5,16 +5,11 @@ import styles from "./board.module.css";
 import { useUser } from "@/contexts/UserContext";
 import { CSS } from "@dnd-kit/utilities";
 
-import {
-    DndContext,
-    closestCorners,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    useDraggable,
-} from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import Tasklist from "../Tasklist/Tasklist";
+import { useModal } from "@/contexts/ModalContext";
+import DeleteConfirmationModal from "../Modal/DeleteConfirmationModal";
+import AddBoardComponentModal from "../Modal/AddBoardComponentModal";
 const maxXPosition = 3;
 
 export default function Board(props) {
@@ -26,6 +21,8 @@ export default function Board(props) {
         transition,
         isDragging,
     } = useSortable({ id: `board-${props.board.id}` });
+
+    const { openModal, closeModal } = useModal();
 
     // Move the board when draggedf
     const style = {
@@ -44,7 +41,7 @@ export default function Board(props) {
         // In the hope everything goes right, we remove the board from the list
         props.onDelete(props.board.id);
 
-        // TODO KEEP IN HERE?
+        // TODO: KEEP IN HERE?
         try {
             const response = await fetch(
                 `/api/boards/?id=${props.board.id}&owner_id=${user.id}`,
@@ -78,15 +75,17 @@ export default function Board(props) {
         event.stopPropagation();
         event.preventDefault();
 
-        props.deleteModalCallback(() => handleDeleteCallback)
-        props.showDeleteModal();
+        openModal(DeleteConfirmationModal, {
+            onConfirm: () => {
+                setShowOptions(false);
+                delCurrentBoard();
+                closeModal();
+            },
+            onClose: () => {
+                closeModal();
+            },
+        });
     };
-
-    const handleDeleteCallback = () => {
-        console.trace("Deleting board...");
-        setShowOptions(false);
-        delCurrentBoard();
-    }
 
     const updateBoard = async () => {
         try {
@@ -120,14 +119,27 @@ export default function Board(props) {
                     }
                     return board;
                 });
-            })
+            });
 
             updateBoard();
         }
     };
 
     const handleAdd = (event) => {
-        props.showAddboardComponent(props.board.id);
+        event.stopPropagation();
+        event.preventDefault();
+        
+        openModal(AddBoardComponentModal, {
+            id: props.board.id,
+            onConfirm: () => {
+                closeModal();
+                props.requestRefresh();
+            },
+            onClose: () => {
+                setAddComponentModal(false);
+                props.requestRefresh();
+            }
+        });
     };
 
     const displayTasklist = (board) => {
@@ -169,7 +181,7 @@ export default function Board(props) {
                     </>
                 ) : (
                     <>
-                        <p>{props.board.name}</p>
+                        <p className="no-overflow">{props.board.name}</p>
                         <div className={styles.headerOptionsContainer}>
                             <span
                                 className="material-icons card-header-menu"
@@ -189,13 +201,34 @@ export default function Board(props) {
             </div>
 
             {!showOptions ? (
-                <>
+                <div className={styles.boardContent}>
                     {/* <p>
                         {props.board.positionX} {props.board.positionY} {props.board.description}
                     </p> */}
-                    <p>{props.board.description}</p>
+                    {isEditing ? (
+                        <textarea
+                            className={styles.textaeraEdit}
+                            rows="5"
+                            color="40"
+                            type="text"
+                            name="description"
+                            id="description"
+                            value={props.board.description}
+                            onChange={(event) => {
+                                props.board.description = event.target.value;
+                                setDescription(event.target.value);
+                            }}
+                            placeholder="Your board description..."
+                        />
+                    ) : (
+                        props.board.description && (
+                            <p className="no-overflow">
+                                {props.board.description}
+                            </p>
+                        )
+                    )}
                     {displayTasklist(props.board)}
-                </>
+                </div>
             ) : (
                 <div className={styles.options}>
                     {props.board.positionX > 0 && (

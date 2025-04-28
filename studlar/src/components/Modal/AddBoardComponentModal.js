@@ -4,8 +4,7 @@ import boardStyles from "../Boards/board.module.css";
 import { useState } from "react";
 import Modal from "./Modal";
 
-export default function AddBoardComponentModal(props) {
-    const { id, onClose } = props;
+export default function AddBoardComponentModal(props = {}) {
     const { user } = useUser();
 
     const [type, setType] = useState("");
@@ -37,13 +36,13 @@ export default function AddBoardComponentModal(props) {
                     name: name,
                     description: description,
                     owner_id: user.id,
-                    board_id: id,
+                    board_id: props.id,
                 }),
             });
 
             const data = await response.json();
             if(response.ok) {
-                props.onClose();
+                props.onConfirm();
             }
         } catch(error) {
             console.error("Error:", error);

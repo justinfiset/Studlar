@@ -3,8 +3,16 @@
     flex-direction: column;
 }
 
+.contentHolder > * {
+    margin: 0;
+    margin-left: auto;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+}
+
 .editForm {
-    margin-top: 0.5em
+    margin-top: 0.5em;
 }
 
 .buttonSection {

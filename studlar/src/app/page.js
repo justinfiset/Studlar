@@ -6,7 +6,6 @@ import CreateBoardModel from "@/components/Modal/CreateBoardModal";
 import { useUser } from "@/contexts/UserContext";
 import Board from "@/components/Boards/Board";
 import Link from "next/link";
-import DeleteConfirmationModal from "@/components/Modal/DeleteConfirmationModal";
 
 import {
     DndContext,
@@ -20,7 +19,7 @@ import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { arrayMove } from "@dnd-kit/sortable";
 import BoardColumn from "@/components/Boards/BoardColumn";
 import { ClientOnly } from "@/components/ClientOnly";
-import AddBoardComponentModal from "@/components/Modal/AddBoardComponentModal";
+import { useModal } from "@/contexts/ModalContext";
 
 export default function Home() {
     const [pendingUpdates, setPendingUpdates] = useState(new Set());
@@ -36,6 +35,8 @@ export default function Home() {
         }
     }, [pendingUpdates]);
 
+    const { openModal, closeModal } = useModal();
+
     const { user } = useUser();
     const [error, setError] = useState("");
     const [reload, setReload] = useState(false);
@@ -44,20 +45,6 @@ export default function Home() {
     const [forceRefresh, setForceRefresh] = useState(0);
     const refreshColumns = () => {
         setForceRefresh((prev) => prev + 1);
-    };
-
-    // Modals
-    const [deleteConfirmModalShow, setDeleteConfirmModalShow] = useState(false);
-    const [deleteConfirmationCallback, setDeleteConfirmationCallback] =
-        useState(null);
-
-    const [activeBoardId, setActiveBoardId] = useState(null);
-    const [createModal, setCreateModal] = useState(false);
-    const [addComponentModal, setAddComponentModal] = useState(false);
-
-    const showAddboardComponent = (id) => {
-        setActiveBoardId(id);
-        setAddComponentModal(true);
     };
 
     // Dnd
@@ -325,18 +312,6 @@ export default function Home() {
                 </div>
             )}
 
-            {deleteConfirmModalShow && (
-                <DeleteConfirmationModal
-                    onClose={() => setDeleteConfirmModalShow(false)}
-                    onConfirm={() => {
-                        if (deleteConfirmationCallback) {
-                            deleteConfirmationCallback();
-                        }
-                        setDeleteConfirmModalShow(false);
-                    }}
-                />
-            )}
-
             <section className={styles.contentHolder}>
                 {boards && (
                     <ClientOnly>
@@ -367,16 +342,7 @@ export default function Home() {
                                         setBoards(newBoards);
                                         refreshColumns();
                                     }}
-                                    showAddboardComponent={
-                                        showAddboardComponent
-                                    }
-                                    // Delete modal
-                                    showDeleteModal={() => {
-                                        setDeleteConfirmModalShow(true);
-                                    }}
-                                    deleteModalCallback={
-                                        setDeleteConfirmationCallback
-                                    }
+                                    requestRefresh={requestRefresh}
                                     boardsHook={setBoards}
                                 />
                             ))}
@@ -406,24 +372,22 @@ export default function Home() {
                     </article>
                 )}
             </section>
-            <div className={styles.addBtn} onClick={() => setCreateModal(true)}>
+            <div
+                className={styles.addBtn}
+                onClick={() => {
+                    openModal(CreateBoardModel, {
+                        onClose: () => {
+                            closeModal();
+                        },
+                        onCreate: () => {
+                            closeModal();
+                            requestRefresh();
+                        },
+                    });
+                }}
+            >
                 <span className="material-icons">add</span>
             </div>
-            {createModal && (
-                <CreateBoardModel
-                    onClose={() => setCreateModal(false)}
-                    onCreate={requestRefresh}
-                />
-            )}
-            {addComponentModal && (
-                <AddBoardComponentModal
-                    id={activeBoardId}
-                    onClose={() => {
-                        setAddComponentModal(false);
-                        requestRefresh();
-                    }}
-                />
-            )}
         </>
     );
 }

@@ -97,7 +97,9 @@ export default function AccountPage(props) {
                                             type="text"
                                             id="firstname"
                                             name="firstname"
-                                            defaultValue={tempUserSettings.firstname}
+                                            defaultValue={
+                                                tempUserSettings.firstname
+                                            }
                                             onChange={(e) => {
                                                 setTempUserSettings({
                                                     ...tempUserSettings,
@@ -113,7 +115,9 @@ export default function AccountPage(props) {
                                             type="text"
                                             id="lastname"
                                             name="lastname"
-                                            defaultValue={tempUserSettings.lastname}
+                                            defaultValue={
+                                                tempUserSettings.lastname
+                                            }
                                             onChange={(e) => {
                                                 setTempUserSettings({
                                                     ...tempUserSettings,
@@ -129,7 +133,9 @@ export default function AccountPage(props) {
                                             type="email"
                                             id="email"
                                             name="email"
-                                            defaultValue={tempUserSettings.email}
+                                            defaultValue={
+                                                tempUserSettings.email
+                                            }
                                             onChange={(e) => {
                                                 setTempUserSettings({
                                                     ...tempUserSettings,
@@ -158,7 +164,10 @@ export default function AccountPage(props) {
                                         setIsEditing(!isediting);
                                     }}
                                 >
-                                    {isediting ? "Cancel" : "Edit"}
+                                    <span className="material-icons">
+                                        {isediting ? "close" : "edit"}
+                                    </span>
+                                    <span>{isediting ? "Cancel" : "Edit"}</span>
                                 </button>
                             </div>
                         </>
@@ -167,6 +176,9 @@ export default function AccountPage(props) {
                     )}
                 </article>
                 <article>
+                    <div className="card-header">
+                        <p>Actions</p>
+                    </div>
                     <button onClick={logout} className="danger-button">
                         Logout
                     </button>
