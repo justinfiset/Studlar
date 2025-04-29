@@ -153,6 +153,7 @@ export default function AccountPage(props) {
                                 ) : (
                                     <span></span>
                                 )}
+                                <span></span>
                                 <button
                                     className={isediting ? "danger-button" : ""}
                                     onClick={() => {

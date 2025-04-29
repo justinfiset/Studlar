@@ -2,26 +2,44 @@ import styles from "./tasklist.module.css";
 import boardStyles from "@/components/Boards/board.module.css";
 
 import { useSortable } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useModal } from "@/contexts/ModalContext";
 import TaskEditModal from "@/components/Modal/TaskEditModal";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function Task({
     task,
     icon,
-    id,
     setClickedTask,
     hanleShowStatusDialog,
+    setTask
 }) {
     const { openModal, closeModal } = useModal();
 
-    const { attributes, listeners, setNoderef, transform } = useSortable({
-        id: id,
+    const {
+        attributes,
+        listeners,
+        setNoderef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
+        id: `task-${task.id}`,
     });
 
     return (
         <div
             className={styles.tasklistTask}
+            ref={setNoderef}
+            style={{
+                transform: CSS.Transform.toString(transform),
+                opacity: isDragging ? 0.5 : 1,
+                transition,
+                position: "relative",
+                boxShadow: isDragging ? "0 4px 8px rgba(0,0,0,0.1)" : "none",
+            }}
+            {...attributes}
+            {...listeners}
         >
             <span className="material-icons">{icon}</span>
 
@@ -35,22 +53,25 @@ export default function Task({
             >
                 arrow_drop_down
             </span>
-            <p className={styles.taskName}
+            <p
+                className={styles.taskName}
                 onClick={() => {
-                    openModal(TaskEditModal,
-                        {
-                            task: task,
-                            onClose: () => {
-                                closeModal();
-                            },
-                            onConfirm: () => {
-                                deleteTask(task.id);
-                                closeModal();
-                            },
-                        }
-                    )
+                    openModal(TaskEditModal, {
+                        task: task,
+                        onClose: () => {
+                            closeModal();
+                        },
+                        onConfirm: (result) => {
+                            if(result != task) {
+                                setTask(result);
+                            }
+                            closeModal();
+                        },
+                    });
                 }}
-            >{task.title}</p>
+            >
+                {task.title}
+            </p>
             <span className={`material-icons ${boardStyles.dragIcon}`}>
                 drag_indicator
             </span>

@@ -137,9 +137,15 @@ button:hover {
 }
 
 .button-section {
+    margin-top: 0.5em;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+}
+
+.button-section > * {
+    margin: 0 0.25em 0 0.25em;
     width: 100%;
 }
 

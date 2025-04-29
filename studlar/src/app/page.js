@@ -42,6 +42,11 @@ export default function Home() {
     const [reload, setReload] = useState(false);
     const [boards, setBoards] = useState([]);
 
+    useEffect(() => {
+        console.log(boards); // TODO: remove at some points
+        refreshColumns();
+    }, [boards]);
+
     const [forceRefresh, setForceRefresh] = useState(0);
     const refreshColumns = () => {
         setForceRefresh((prev) => prev + 1);
@@ -300,6 +305,8 @@ export default function Home() {
 
                 addPendingUpdate(activeBoard.id);
             }
+        } else if (active.id.toString().includes("task")) {
+            alert("test");
         }
     };
 
@@ -356,6 +363,7 @@ export default function Home() {
                                         board={getBoard(activeDragId)}
                                         onDelete={() => {}}
                                         onUpdate={() => {}}
+                                        isOverlay={true}
                                     />
                                 )}
                             </DragOverlay>

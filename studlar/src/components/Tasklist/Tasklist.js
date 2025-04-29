@@ -4,8 +4,17 @@ import styles from "./tasklist.module.css";
 import boardStyles from "@/components/Boards/board.module.css";
 import TaskStatusSelector from "./TaskStatusSelector";
 import Task from "./Task";
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
-export default function Tasklist({ tasklist }) {
+export default function Tasklist({ tasklist, setTaskList }) {
+    const [tasks, setTasks] = useState(tasklist.tasks);
+    useEffect(() => {
+        setTasks(tasklist.tasks);
+    }, [tasklist.tasks]);
+
     const statusList = [
         { name: "todo", icon: "radio_button_unchecked" },
         { name: "in progress", icon: "hourglass_empty" },
@@ -163,6 +172,19 @@ export default function Tasklist({ tasklist }) {
         }
     };
 
+    const setTask = (task) => {
+        const newTaskList = tasklist;
+        newTaskList.tasks = newTaskList.tasks.map((t) => {
+            if (t.id === task.id) {
+                return task;
+            }
+            return t;
+        });
+
+        setTaskList(newTaskList);
+        refreshList();
+    };
+
     return (
         <>
             {showStatusDialog && clickedTask && (
@@ -186,20 +208,27 @@ export default function Tasklist({ tasklist }) {
                         <p>{tasklist.description}</p>
                     </div>
                 )}
-                {tasklist.tasks.map((task) => (
-                    <Task
-                        task={task}
-                        icon={
-                            statusList.find(
-                                (status) => status.name === task.status
-                            )?.icon || "radio_button_unchecked"
-                        }
-                        key={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
-                        id={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
-                        setClickedTask={setClickedTask}
-                        hanleShowStatusDialog={handleShowStatusDialog}
-                    />
-                ))}
+                <SortableContext
+                    items={tasks.map((task) => `task-${task.id}`)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    {tasks.map((task) => (
+                        <Task
+                            task={task}
+                            icon={
+                                statusList.find(
+                                    (status) => status.name === task.status
+                                )?.icon || "radio_button_unchecked"
+                            }
+                            key={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
+                            setClickedTask={setClickedTask}
+                            hanleShowStatusDialog={handleShowStatusDialog}
+                            f
+                            setTask={setTask}
+                        />
+                    ))}
+                </SortableContext>
+
                 <div
                     className={styles.tasklistTask}
                     onClick={handleTaskCreation}

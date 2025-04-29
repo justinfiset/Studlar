@@ -33,6 +33,10 @@ export default function Board(props) {
     const style = {
         transition: isDragging ? "none" : transition,
         transform: CSS.Transform.toString(transform),
+        boxShadow:
+            isDragging || props.isOverlay
+                ? "0 4px 8px rgba(0,0,0,0.1)"
+                : "none",
     };
 
     const [showOptions, setShowOptions] = useState(false);
@@ -158,9 +162,36 @@ export default function Board(props) {
         });
     };
 
+    const setTaskList = (tasklist) => {
+        console.log("nouvelle taskist :", tasklist);
+        (tasklist) => {
+            props.boardsHook((prev) => {
+                return prev.map((b) => {
+                    if (b.id == props.board.id) {
+                        return {
+                            ...b,
+                            task_lists: b.task_lists.map((tl) => {
+                                if (tl.id == tasklist.id) {
+                                    return tasklist;
+                                }
+                                return tl;
+                            }),
+                        };
+                    } else {
+                        return b;
+                    }
+                });
+            });
+        };
+    };
+
     const displayTasklist = (board) => {
         return props.board.task_lists.map((tasklist) => (
-            <Tasklist tasklist={tasklist} key={`tasklist-${tasklist.id}`} />
+            <Tasklist
+                tasklist={tasklist}
+                key={`tasklist-${tasklist.id}`}
+                setTaskList={setTaskList}
+            />
         ));
     };
 
@@ -181,9 +212,7 @@ export default function Board(props) {
             <div className={styles.draggableHeader} {...listeners}></div>
             {isEditing && (
                 <div className="button-section">
-                    <button onClick={handleEdit}>
-                        Save
-                    </button>
+                    <button onClick={handleEdit}>Save</button>
                     <button
                         className="danger-button"
                         onClick={() => {
