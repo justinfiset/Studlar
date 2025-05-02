@@ -156,8 +156,8 @@ export default function Board(props) {
                 props.requestRefresh();
             },
             onClose: () => {
-                setAddComponentModal(false);
                 props.requestRefresh();
+                closeModal();
             },
         });
     };

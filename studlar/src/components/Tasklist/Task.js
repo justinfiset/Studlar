@@ -9,10 +9,11 @@ import { CSS } from "@dnd-kit/utilities";
 
 export default function Task({
     task,
+    tasklist_id,
     icon,
     setClickedTask,
     hanleShowStatusDialog,
-    setTask
+    setTask,
 }) {
     const { openModal, closeModal } = useModal();
 
@@ -26,6 +27,12 @@ export default function Task({
     } = useSortable({
         id: `task-${task.id}`,
     });
+
+    const handleEditClick = (e) => {
+        e.preventDefault();
+        setClickedTask(task);
+        hanleShowStatusDialog(e, task);
+    };
 
     return (
         <div
@@ -41,16 +48,11 @@ export default function Task({
             {...attributes}
             {...listeners}
         >
-            <span className="material-icons">{icon}</span>
+            <span className="material-icons" onClick={handleEditClick}>
+                {icon}
+            </span>
 
-            <span
-                className="material-icons"
-                onClick={(e) => {
-                    e.preventDefault();
-                    setClickedTask(task);
-                    hanleShowStatusDialog(e, task);
-                }}
-            >
+            <span className="material-icons" onClick={handleEditClick}>
                 arrow_drop_down
             </span>
             <p
@@ -58,11 +60,12 @@ export default function Task({
                 onClick={() => {
                     openModal(TaskEditModal, {
                         task: task,
+                        tasklist_id: tasklist_id,
                         onClose: () => {
                             closeModal();
                         },
                         onConfirm: (result) => {
-                            if(result != task) {
+                            if (result != task) {
                                 setTask(result);
                             }
                             closeModal();

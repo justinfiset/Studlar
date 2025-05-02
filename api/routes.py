@@ -122,6 +122,17 @@ def update_task(task: TaskUpdate, db: Session = Depends(get_db)):
         "created_at": db_task.created_at.isoformat(),
         "updated_at": db_task.updated_at.isoformat()
     }
+    
+@router.delete("/api/tasks/")
+def delete_task(task: TaskDelete, db: Session = Depends(get_db)):
+    db_task = db.query(Task).filter(Task.id == task.id, Task.list_id == task.list_id).first()
+    if(not db_task):
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    db.delete(db_task)
+    db.commit()
+
+    return { "message": "Task deletion sucess!"}
 
 # TASKLIKST ROUTES
 @router.get("/api/tasklists/", response_model=list[TaskListResponse])

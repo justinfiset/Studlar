@@ -1,12 +1,16 @@
 import styles from "./modal.module.css";
 import { useEffect, useState } from "react";
 import Modal from "./Modal";
+import { useModal } from "@/contexts/ModalContext";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 export default function TaskEditModal({
     onClose = () => {},
     onConfirm = () => {},
     task = {},
+    tasklist_id = -1
 }) {
+    const { openModal, closeModal } = useModal();
     const [tempTask, setTempTask] = useState({});
 
     useEffect(() => {
@@ -25,8 +29,48 @@ export default function TaskEditModal({
         onConfirm(tempTask);
     };
 
+    const handleDelete = () => {
+        openModal(DeleteConfirmationModal, {
+            onConfirm: () => {
+                handleDeleteCallback();
+                onConfirm({
+                    ...tempTask,
+                    deleted: true,
+                });
+            },
+            onClose: () => {
+                openModal(
+                    TaskEditModal,
+                    {
+                        onClose: onClose,
+                        onConfirm: onConfirm,
+                        task: tempTask,
+                    }
+                )
+            },
+        });
+    };
+
+    const handleDeleteCallback = async () => {
+        const response = fetch(`/api/boards/tasks/`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                id: tempTask.id,
+                list_id: tasklist_id,
+            })
+        });
+    };
+
     return (
-        <Modal title="Task Detail" onClose={onClose} show={true}>
+        <Modal
+            title="Task Detail"
+            onClose={onClose}
+            onDelete={handleDelete}
+            show={true}
+        >
             <div>
                 <form className={styles.formContent}>
                     <label>

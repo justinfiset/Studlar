@@ -7,7 +7,9 @@ import Task from "./Task";
 import {
     SortableContext,
     verticalListSortingStrategy,
+    useSortable,
 } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function Tasklist({ tasklist, setTaskList }) {
     const [tasks, setTasks] = useState(tasklist.tasks);
@@ -20,6 +22,23 @@ export default function Tasklist({ tasklist, setTaskList }) {
         { name: "in progress", icon: "hourglass_empty" },
         { name: "done", icon: "radio_button_checked" },
     ];
+
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
+        id: `tasklist-${tasklist.id}`,
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    };
 
     const [addingTask, setAddingTask] = useState(false);
     const [newTaskName, setNewTaskName] = useState("");
@@ -174,12 +193,16 @@ export default function Tasklist({ tasklist, setTaskList }) {
 
     const setTask = (task) => {
         const newTaskList = tasklist;
-        newTaskList.tasks = newTaskList.tasks.map((t) => {
-            if (t.id === task.id) {
-                return task;
-            }
-            return t;
-        });
+        if(!task.deleted) {
+            newTaskList.tasks = newTaskList.tasks.map((t) => {
+                if (t.id === task.id) {
+                    return task;
+                }
+                return t;
+            });
+        } else {
+            newTaskList.tasks = tasklist.tasks.filter((t) => t.id !== task.id);
+        }
 
         setTaskList(newTaskList);
         refreshList();
@@ -197,7 +220,7 @@ export default function Tasklist({ tasklist, setTaskList }) {
                     onChangeStatus={handleStatusChange}
                 />
             )}
-            <div>
+            <div {...attributes} ref={setNodeRef} style={style}>
                 {tasklist.name && (
                     <div className={boardStyles.subsectionHeader}>
                         <p>{tasklist.name}</p>
@@ -215,6 +238,7 @@ export default function Tasklist({ tasklist, setTaskList }) {
                     {tasks.map((task) => (
                         <Task
                             task={task}
+                            tasklist_id={tasklist.id}
                             icon={
                                 statusList.find(
                                     (status) => status.name === task.status
@@ -223,7 +247,6 @@ export default function Tasklist({ tasklist, setTaskList }) {
                             key={`task-${tasklist.id}-${task.id}-${forceRefresh}`}
                             setClickedTask={setClickedTask}
                             hanleShowStatusDialog={handleShowStatusDialog}
-                            f
                             setTask={setTask}
                         />
                     ))}

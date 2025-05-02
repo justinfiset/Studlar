@@ -8,14 +8,14 @@ export function ModalProvider({ children }) {
     const [modalConfig, setModalConfig] = useState({
         component: null,
         props: {},
-        isOpen: false
+        isOpen: false,
     });
 
     const openModal = (component, props = {}) => {
         setModalConfig({
             component,
             props,
-            isOpen: true
+            isOpen: true,
         });
     };
 
@@ -23,17 +23,21 @@ export function ModalProvider({ children }) {
         setModalConfig({
             component: null,
             props: {},
-            isOpen: false
+            isOpen: false,
         });
     };
+
+    const handleClose = () => {
+        modalConfig.props.onClose?.();
+    }
 
     return (
         <ModalContext.Provider value={{ openModal, closeModal }}>
             {children}
             {modalConfig.isOpen && modalConfig.component && (
-                <modalConfig.component 
-                    {...modalConfig.props} 
-                    onClose={closeModal}
+                <modalConfig.component
+                    {...modalConfig.props}
+                    onClose={handleClose}
                 />
             )}
         </ModalContext.Provider>

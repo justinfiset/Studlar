@@ -4,6 +4,10 @@ from typing import Optional
 class TaskGet(BaseModel):
     list_id: int
 
+class TaskDelete(BaseModel):
+    id: int
+    list_id: int
+
 class TaskCreate(BaseModel):
     title: str
     description: str

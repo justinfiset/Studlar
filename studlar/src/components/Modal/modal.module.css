@@ -19,12 +19,13 @@
 .cardHeader {
     display: flex;
     align-items: center;
+    margin-top: 5px;
     justify-content: space-between;
     border-bottom: solid 1px #3a5a40;
     font-size: 1em;
 }
 
-.cardHeader * {
+.cardHeader > * {
     margin: 0 0 5px 0;
     font-weight: bolder;
     font-size: 1.4em;
