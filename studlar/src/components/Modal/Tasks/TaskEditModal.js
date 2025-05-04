@@ -1,8 +1,8 @@
-import styles from "./modal.module.css";
+import styles from "@/components/Modal/modal.module.css";
 import { useEffect, useState } from "react";
-import Modal from "./Modal";
+import Modal from "../Modal";
 import { useModal } from "@/contexts/ModalContext";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import DeleteConfirmationModal from "../DeleteConfirmationModal";
 
 export default function TaskEditModal({
     onClose = () => {},

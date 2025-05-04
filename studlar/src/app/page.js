@@ -20,6 +20,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 import BoardColumn from "@/components/Boards/BoardColumn";
 import { ClientOnly } from "@/components/ClientOnly";
 import { useModal } from "@/contexts/ModalContext";
+import SuccessBanner from "@/components/Banner/SuccessBanner";
 
 export default function Home() {
     const [pendingUpdates, setPendingUpdates] = useState(new Set());

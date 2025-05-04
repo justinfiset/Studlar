@@ -135,6 +135,30 @@ def delete_task(task: TaskDelete, db: Session = Depends(get_db)):
     return { "message": "Task deletion sucess!"}
 
 # TASKLIKST ROUTES
+@router.put("/api/tasklists/", response_model=TaskListResponse)
+def update_tasklist(tasklist: TaskListUpdate, db: Session = Depends(get_db)):
+    db_tasklist = db.query(TaskList).filter(TaskList.id == tasklist.id).first()
+    if(not db_tasklist):
+        raise HTTPException(status_code=404, detail="Tasklist not found")
+    
+    for key, value in tasklist.dict(exclude_unset=True).items():
+        setattr(db_tasklist, key, value)
+
+    db.commit()
+    db.refresh(db_tasklist)
+    return db_tasklist
+
+@router.delete("/api/tasklists/")
+def delete_tasklist(tasklist: TaskListDelete, db : Session = Depends(get_db)):
+    db_tasklist = db.query(TaskList).filter(TaskList.id == tasklist.id).first()
+    if(not db_tasklist):
+        raise HTTPException(status_code=404, detail="Task list not found")
+    
+    db.delete(db_tasklist)
+    db.commit()
+
+    return { "message": "Tasklist deletion sucess!"}
+
 @router.get("/api/tasklists/", response_model=list[TaskListResponse])
 def get_tasklists(tasklist: TaskListGet = Depends(), db : Session = Depends(get_db)):
     db_tasklists = db.query(TaskList).filter(TaskList.board_id == tasklist.board_id).all()

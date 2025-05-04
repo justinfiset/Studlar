@@ -6,12 +6,16 @@ import TaskStatusSelector from "./TaskStatusSelector";
 import Task from "./Task";
 import {
     SortableContext,
-    verticalListSortingStrategy,
     useSortable,
+    verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useModal } from "@/contexts/ModalContext";
+import TasklistEditModal from "@/components/Modal/Tasks/TasklistEditModal";
 
 export default function Tasklist({ tasklist, setTaskList }) {
+    const { openModal, closeModal } = useModal();
+
     const [tasks, setTasks] = useState(tasklist.tasks);
     useEffect(() => {
         setTasks(tasklist.tasks);
@@ -193,7 +197,7 @@ export default function Tasklist({ tasklist, setTaskList }) {
 
     const setTask = (task) => {
         const newTaskList = tasklist;
-        if(!task.deleted) {
+        if (!task.deleted) {
             newTaskList.tasks = newTaskList.tasks.map((t) => {
                 if (t.id === task.id) {
                     return task;
@@ -221,11 +225,30 @@ export default function Tasklist({ tasklist, setTaskList }) {
                 />
             )}
             <div {...attributes} ref={setNodeRef} style={style}>
-                {tasklist.name && (
-                    <div className={boardStyles.subsectionHeader}>
-                        <p>{tasklist.name}</p>
+                <div className={boardStyles.subsectionHeader}>
+                    <p>{tasklist.name ? tasklist.name : ""}</p>
+                    <div className={boardStyles.subsectionHeaderIcons}>
+                        <span
+                            className="material-icons card-header-menu"
+                            onClick={() => {
+                                openModal(TasklistEditModal, {
+                                    tasklist: tasklist,
+                                    onConfirm: (result) => {
+                                        if (result) {
+                                            setTaskList(result);
+                                        }
+                                        closeModal();
+                                    },
+                                    onClose: () => {
+                                        closeModal();
+                                    }
+                                });
+                            }}
+                        >
+                            settings
+                        </span>
                     </div>
-                )}
+                </div>
                 {tasklist.description && (
                     <div className={boardStyles.subsectionDescription}>
                         <p>{tasklist.description}</p>

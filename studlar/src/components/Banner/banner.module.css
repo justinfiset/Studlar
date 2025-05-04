@@ -1,0 +1,56 @@
+.banner {
+    position: fixed;
+    bottom: 15px;
+    width: 76%;
+    height: 3rem;
+    
+    /*Centering the banner*/
+    left: 50%;
+    transform: translateX(-50%);
+
+    border: #dad7cd solid 2px;
+    border-radius: 10px;
+
+    color: #cddacd;
+
+    /* Layout */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bolder;
+    gap: 10px;
+
+    z-index: 9999;
+
+    animation: slideIn 0.2s ease-out forwards;
+}
+
+.banner.hide {
+    animation: slideOut 0.2s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translate(-50%, 100%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+    to {
+        transform: translate(-50%, 100%);
+        opacity: 0;
+    }
+}
+
+.success {
+    background-color: #6cac73;
+}

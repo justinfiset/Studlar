@@ -163,8 +163,7 @@ export default function Board(props) {
     };
 
     const setTaskList = (tasklist) => {
-        console.log("nouvelle taskist :", tasklist);
-        (tasklist) => {
+        if (!tasklist.deleted) {
             props.boardsHook((prev) => {
                 return prev.map((b) => {
                     if (b.id == props.board.id) {
@@ -182,7 +181,22 @@ export default function Board(props) {
                     }
                 });
             });
-        };
+        } else {
+            props.boardsHook((prev) => {
+                return prev.map((b) => {
+                    if (b.id == props.board.id) {
+                        return {
+                            ...b,
+                            task_lists: b.task_lists.filter(
+                                (tl) => tl.id != tasklist.id
+                            ),
+                        };
+                    } else {
+                        return b;
+                    }
+                });
+            });
+        }
     };
 
     const displayTasklist = (board) => {

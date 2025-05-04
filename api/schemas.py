@@ -38,10 +38,18 @@ class TaskResponse(BaseModel):
 class TaskListGet(BaseModel):
     board_id: int
 
+class TaskListUpdate(BaseModel):
+    id: int
+    name: Optional[str] = None
+    description: Optional[str] = None
+
 class TaskListCreate(BaseModel):
     name: str
     description: str
     board_id: int
+    
+class TaskListDelete(BaseModel):
+    id: int
 
 class TaskListResponse(BaseModel):
     id: int
