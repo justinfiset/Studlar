@@ -74,6 +74,10 @@ article p label input button {
     border-bottom: solid 1px #3a5a40;
 }
 
+.accept-whitespace {
+    white-space: pre-line;
+}
+
 .card-header * {
     padding: 0;
     margin: 0;

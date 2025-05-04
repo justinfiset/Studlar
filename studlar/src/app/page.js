@@ -307,7 +307,7 @@ export default function Home() {
                 addPendingUpdate(activeBoard.id);
             }
         } else if (active.id.toString().includes("task")) {
-            alert("test");
+            //alert("test");
         }
     };
 

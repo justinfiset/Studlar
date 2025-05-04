@@ -304,7 +304,7 @@ export default function Board(props) {
                         />
                     ) : (
                         props.board.description && (
-                            <p className="no-overflow">
+                            <p className="no-overflow accept-whitespace">
                                 {props.board.description}
                             </p>
                         )
