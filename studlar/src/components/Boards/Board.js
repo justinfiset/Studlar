@@ -31,7 +31,7 @@ export default function Board(props) {
 
     // Move the board when draggedf
     const style = {
-        transition: isDragging ? "none" : transition,
+        transition: isDragging ? "100ms" : transition,
         transform: CSS.Transform.toString(transform),
         boxShadow:
             isDragging || props.isOverlay

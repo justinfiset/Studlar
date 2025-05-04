@@ -1,6 +1,7 @@
 import styles from "./tasklist.module.css";
 import boardStyles from "@/components/Boards/board.module.css";
 
+import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import { useEffect, useState } from "react";
 import { useModal } from "@/contexts/ModalContext";
